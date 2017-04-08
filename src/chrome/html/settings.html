@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			EES
+		</title>
+		<style>
+			@charset "UTF-8";
+			
+			#tabs {
+				text-align: center;
+				margin-bottom: 20px;
+			}
+			
+			.tab {
+				text-align: center;
+				padding: 7px;
+				border: 1px solid black;
+				cursor: pointer;
+				font-weight: bold;
+				color: black;
+				background-color: white;
+			}
+			
+			.sel {
+				color: white;
+				background-color: black;
+			}
+			
+			.option {
+				width: 200px;
+				text-align: center;
+				margin-bottom: 10px;
+				cursor: pointer;
+			}
+			
+			.close:after {
+				content: "\2716";
+				font-size: 16px;
+				display: inline-block;
+				margin-left: 5px;
+			}
+			
+			.close:hover {
+				color: grey;
+			}
+			
+			#help {
+				text-align: center;
+				cursor: pointer;
+			}
+			
+			#help a {
+				text-decoration: none;
+				color: cadetblue;
+			}
+			
+			input[type='checkbox'] {
+				cursor: pointer;
+			}
+		</style>
+		<script src="../libs/jquery-3.1.1.min.js"></script>
+	</head>
+	<body>
+		<div id="tabs">
+			<span class="tab sel" data-tab="scripts">Scripts</span>
+			<span class="tab" data-tab="ftrack">Tracked Topics</span>
+		</div>
+		<div id="scripts" class="container">
+			<div id="actionsearch" class="option">
+				<span class="optionLabel">ActionSearch</span> <input type="checkbox" />
+			</div>
+			<div id="autorefresh" class="option">
+				<span class="optionLabel">AutoRefresh</span> <input type="checkbox" />
+			</div>
+			<div id="betterUserpages" class="option">
+				<span class="optionLabel">Better Userpages</span> <input type="checkbox" />
+			</div>
+			<div id="compmatch" class="option">
+				<span class="optionTag">CompMatch</span> <input type="checkbox" />
+			</div>
+			<div id="autoplay" class="option">
+				<span class="optionLabel">Don't Autoplay Videos</span> <input type="checkbox" />
+			</div>
+			<div id="console" class="option">
+				<span class="optionLabel">emConsole</span> <input type="checkbox" />
+			</div>
+			<div id="emjack" class="option">
+				<span class="optionLabel">emjack</span> <input type="checkbox" />
+			</div>
+			<div id="emnote" class="option">
+				<span class="optionLabel">emNote</span> <input type="checkbox" />
+			</div>
+			<div id="forumtracker" class="option">
+				<span class="optionLabel">ForumTracker</span> <input type="checkbox" />
+			</div>
+			<div id="hideBackground" class="option">
+				<span class="optionLabel">Hide Background</span> <input type="checkbox" />
+			</div>
+		</div>
+		<div id="ftrack" class="container" style="display: none;">
+			
+		</div>
+		<hr />
+		<div id="help">
+			<a href="">Help</a>
+		</div>
+		
+		<script src="../settings.js"></script>
+	</body>
+</html>

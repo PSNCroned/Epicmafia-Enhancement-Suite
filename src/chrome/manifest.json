@@ -1,0 +1,85 @@
+{
+	"manifest_version": 2,
+	"name": "Epicmafia Enhancement Suite",
+	"description": "A suite of features that make Epicmafia quicker and more efficient to use",
+	"version": "1.3.0",
+	"short_name": "EES",
+
+	"page_action": {
+		"default_icon": "icons/icon16.png",
+		"default_popup": "html/settings.html"
+	},
+	"background": {
+		"scripts": ["libs/jquery-3.1.1.min.js", "background.js"]
+	},
+	"content_scripts": [
+	  {
+		  "matches": ["https://epicmafia.com/*"],
+		  "js": ["libs/jquery-3.1.1.min.js", "main.js", "contentscripts/hideBackground.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/*"],
+		  "js": ["contentscripts/console.js", "contentscripts/emnote.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/round*"],
+		  "js": ["contentscripts/compmatch.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/lobby"],
+		  "js": ["contentscripts/autorefresh.js", "contentscripts/emjackget.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/lobby"],
+		  "js": [ "contentscripts/custem.js"],
+		  "run_at": "document_end"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/moderator"],
+		  "js": ["contentscripts/actionsearch.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/game/new*"],
+		  "js": ["contentscripts/fixedsetupcreate.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/game/*"],
+		  "js": ["contentscripts/emjackget.js", "contentscripts/helper.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/topic/*"],
+		  "js": ["contentscripts/forumtracker.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/user/*", "https://epicmafia.com/u/*"],
+		  "js": ["contentscripts/autoplay.js"],
+		  "run_at": "document_start"
+	  },
+	  {
+		  "matches": ["https://epicmafia.com/user/*", "https://epicmafia.com/u/*"],
+		  "js": ["contentscripts/betterUserpages.js"],
+		  "run_at": "document_end"
+	  }
+	],
+ 	"permissions": [
+		"activeTab",
+		"https://ajax.googleapis.com/",
+		"storage",
+		"https://greasyfork.org/",
+		"notifications",
+		"https://epicmafia.com/"
+ 	],
+ 	"icons": {
+		"128": "icons/icon.png",
+		"48": "icons/icon48.png",
+		"16": "icons/icon16.png"
+ 	}
+}
