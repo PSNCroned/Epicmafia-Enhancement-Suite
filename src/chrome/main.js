@@ -50,13 +50,19 @@ var scripts = {
 		running: false,
 		run: null,
 		beforeLoad: false
+	},
+	helper: {
+		running: false,
+		run: null,
+		beforeLoad: false
 	}
 };
 
 
 chrome.runtime.sendMessage({type: "init"});
-window.onload = function () {
-	console.log("WINDOW LOADED");
+
+//This is run by pageLoad.js when document_end is reached
+var pageLoad = function () {
 	loaded = true;
 	runScripts();
 };
@@ -77,11 +83,9 @@ var runScripts = function () {
 };
 
 chrome.runtime.onMessage.addListener(function (res, sender, sRes) {
-	//console.log("Received " + res.type);
 	switch (res.type) {
 		case "setting":
 			settings = res.val;
-			//console.log(settings);
 			runScripts();
 			break;
 		case "emjack":

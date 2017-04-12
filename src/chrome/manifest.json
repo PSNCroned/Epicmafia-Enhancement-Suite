@@ -13,61 +13,57 @@
 		"scripts": ["libs/jquery-3.1.1.min.js", "background.js"]
 	},
 	"content_scripts": [
-	  {
+		{
 		  "matches": ["https://epicmafia.com/*"],
-		  "js": ["libs/jquery-3.1.1.min.js", "main.js", "contentscripts/hideBackground.js"],
+		  "js": ["libs/jquery-3.1.1.min.js", "main.js", "contentscripts/hideBackground.js", "contentscripts/console.js", "contentscripts/emnote.js", "libs/clippy/clippy.js", "contentscripts/helper.js"],
+		  "css": ["libs/clippy/clippy.css"],
 		  "run_at": "document_start"
-	  },
-	  {
-		  "matches": ["https://epicmafia.com/*"],
-		  "js": ["contentscripts/console.js", "contentscripts/emnote.js"],
-		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/round*"],
 		  "js": ["contentscripts/compmatch.js"],
 		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/lobby"],
 		  "js": ["contentscripts/autorefresh.js", "contentscripts/emjackget.js"],
 		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/lobby"],
 		  "js": [ "contentscripts/custem.js"],
 		  "run_at": "document_end"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/moderator"],
 		  "js": ["contentscripts/actionsearch.js"],
 		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/game/new*"],
 		  "js": ["contentscripts/fixedsetupcreate.js"],
 		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/game/*"],
-		  "js": ["contentscripts/emjackget.js", "contentscripts/helper.js"],
-		  "run_at": "document_start"
-	  },
-	  {
+		  "js": ["contentscripts/emjackget.js"],
+		  "run_at": "document_end"
+		},
+		{
 		  "matches": ["https://epicmafia.com/topic/*"],
 		  "js": ["contentscripts/forumtracker.js"],
 		  "run_at": "document_start"
-	  },
-	  {
+		},
+		{
 		  "matches": ["https://epicmafia.com/user/*", "https://epicmafia.com/u/*"],
-		  "js": ["contentscripts/autoplay.js"],
+		  "js": ["contentscripts/autoplay.js", "contentscripts/betterUserpages.js"],
 		  "run_at": "document_start"
-	  },
-	  {
-		  "matches": ["https://epicmafia.com/user/*", "https://epicmafia.com/u/*"],
-		  "js": ["contentscripts/betterUserpages.js"],
+		},
+		{
+		  "matches": ["https://epicmafia.com/*"],
+		  "js": ["contentscripts/pageLoad.js", "contentscripts/roleHover.js"],
 		  "run_at": "document_end"
-	  }
+		}
 	],
  	"permissions": [
 		"activeTab",
@@ -81,5 +77,9 @@
 		"128": "icons/icon.png",
 		"48": "icons/icon48.png",
 		"16": "icons/icon16.png"
- 	}
+ 	},
+	"web_accessible_resources": [
+		"libs/clippy/agents/Clippy/agent.js",
+		"libs/clippy/agents/Clippy/sounds-mp3.js"
+	]
 }
