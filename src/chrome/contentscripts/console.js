@@ -1,5 +1,6 @@
 scripts.console.run = function () {
 	console.log("emConsole");
+	
 	if(!window.jQuery) {
 	   var script = document.createElement('script');
 	   script.type = "text/javascript";
@@ -27,7 +28,8 @@ scripts.console.run = function () {
 				message: "/message",
 				family: "/family",
 				forum: "/forum",
-				forums: "/forum"
+				forums: "/forum",
+				f: "/forum"
 			},
 			lobbies: {
 				main: 1,
@@ -78,9 +80,9 @@ scripts.console.run = function () {
 					<li><i>go reports</i></li>\
 					<li><i>go family</i></li>\
 					<li><i>go [pm, pms, msg, message]</i></li>\
-					<li><i>go [forum, forums]</i></li>\
+					<li><i>go [f, forum, forums]</i></li>\
 					<li><i>go [lobby, l] *[name, id]</i></li>\
-					<li><i>go user *[name, id]</i></li>\
+					<li><i>go [user, u] *[name, id]</i></li>\
 				</ul>\
 			</li>\
 			<li>\
@@ -187,6 +189,7 @@ scripts.console.run = function () {
 							}
 							break;
 						case "user":
+						case "u":
 							if (args.length > 2) {
 								if (!parseInt(args[2])) {
 									getId(args[2], function (id) {
@@ -250,11 +253,15 @@ scripts.console.run = function () {
 					
 					if (!parseInt(args[1])) {
 						getId(args[1], function (id) {
-							$.post("/message", {msg: msg, subject: "", "recipients[]": id});
+							$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
+								window.postMessage({type: 'alert', text: data[1]}, "https://epicmafia.com");
+							});
 						});
 					}
 					else {
-						$.post("/message", {msg: msg, subject: "", "recipients[]": args[1]});
+						$.post("/message", {msg: msg, subject: "", "recipients[]": args[1]}, function (data) {
+							window.postMessage({type: 'alert', text: data[1]}, "https://epicmafia.com");
+						});
 					}
 					break;
 				case "set":
@@ -355,6 +362,17 @@ scripts.console.run = function () {
 							break;
 					}
 					break;
+				case "friend":
+					var id = $("[data-title='Game Statistics']").attr("href").split("/")[2];
+					$.post("https://epicmafia.com/friend/request", {userid: id}, function (data) {
+						if (data.status) {
+							window.postMessage({type: 'alert', text: 'Friend reqeust sent!'}, "https://epicmafia.com");
+						}
+						else {
+							window.postMessage({type: "alert", text: data.msg}, "https://epicmafia.com");
+						}
+					});
+					break;
 				default:
 					if (app.custom.commands[args[0]]) {
 						args[0] = app.custom.commands[args[0]];
@@ -363,7 +381,12 @@ scripts.console.run = function () {
 			}
 		}
 		catch (e) {
-			//error
+			try {
+				window.postMessage({type: 'alert', text: String(e)}, "https://epicmafia.com");
+			}
+			catch (e2) {
+				console.log(e2);
+			}
 		}
 		
 		if (shouldSave) {
@@ -434,15 +457,4 @@ scripts.console.run = function () {
 	};
 
 	cons.focus();
-	/*if (app.version != GM_info.script.version) {
-		window.open().document.body.innerHTML += "\
-		<h1>What's new in EM Console version " + GM_info.script.version + "</h1>\
-		<ul>\
-			<li>Added ability to return all pokes from user page</li>\
-			<li>Added alt switching</li>\
-		</ul>\
-		";
-		app.version = GM_info.script.version;
-		save();
-	}*/
 };

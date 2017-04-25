@@ -2,7 +2,7 @@ scripts.betterUserpages.run = function () {
 	console.log("Better Userpages");
 	
     var id = $("[data-title='Player profile']").attr("href").split("/")[2];
-    
+	
     //Questions
     $.get("https://epicmafia.com/question?user_id=" + id, function (data) {
         var unans = data[1].num_unanswered;
@@ -50,6 +50,30 @@ scripts.betterUserpages.run = function () {
             search();
         }
     });
+	
+	//Poke all
+	var div = $("<div id='pokeAll' class='controls bgwhite' style='color: #555; text-align: center; padding: .5em; font-size: 1em; cursor: pointer;'><a>Poke All</a></div>");
+	$("#pokes h3").after(div);
+	$("#pokeAll").click(function () {
+		var pokes = [];
+		var i = 0;
+		var poke = function () {
+			$.get(pokes[i], function () {
+				i ++;
+				if (i < pokes.length) {
+					poke();
+				}
+				else {
+					window.location.reload();
+				}
+			});
+		};
+
+		$(".poke_back").each(function() {
+			pokes.push($(this).attr("href"));
+		});
+		poke();
+	});
 	
 	/**
 	 * Created by Jordan on 3/29/2017.
