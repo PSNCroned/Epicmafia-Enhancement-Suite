@@ -15,7 +15,6 @@ scripts.console.run = function () {
 	}
 	else {
 		app = {
-			version: "0.22",
 			show: "none",
 			goto: {
 				mods: "/moderator",
@@ -140,6 +139,9 @@ scripts.console.run = function () {
 				<ul>\
 					<li><i>alt [name, partialName]</i></li>\
 				</ul>\
+			</li>\
+			<li>\
+				<b>friend</b> - Send a friend request to the user of the user page you're viewing\
 			</li>\
 		</ul>\
 	";
