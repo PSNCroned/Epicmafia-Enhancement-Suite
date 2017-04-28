@@ -129,6 +129,8 @@ scripts.console.run = function () {
 					<li><i>f [last, l]</i> - Go to last page</li>\
 					<li><i>f [page, p] page#</i> - Go to specific page</li>\
 					<li><i>f [recent, re] index</i> - Go to specific thread from recent topics in lobby</li>\
+					<li><i>f go [search]</i> - Go to the subforum whose name contains the provided search. Searches in subforums for your current lobby.</li>\
+					<li><i>f [topic, t] [search]</i> - Go to the topic whose title contains the provided search. Only works while viewing a list of topics.</li>\
 				</ul>\
 			</li>\
 			<li>\
@@ -144,12 +146,31 @@ scripts.console.run = function () {
 				<b>friend</b> - Send a friend request to the user of the user page you're viewing\
 			</li>\
 		</ul>\
+		\
+		<b>Flairs</b><br>\
+		Add these to the end of your commands to modify their behavior.<br>\
+		i.e. <i>go lobby main -t</i> : Opens main lobby in a new tab\
+		<ul>\
+			<li>\
+				<b>-t</b>: Opens in a new tab (if applicable)\
+			</li>\
+		</ul>\
 	";
 
 	var process = function (cmd) {
 		var shouldSave = true;
 		var args = cmd.toLowerCase().split(" ");
 		var preservedCase = cmd.split(" ");
+		var flairs = [];
+		var noFlairs = [];
+		for (var i in args) {
+			if (args[i].indexOf("-") == 0) {
+				flairs.push(args[i]);
+			}
+			else {
+				noFlairs.push(args[i]);
+			}
+		}
 		
 		try {
 			switch (args[0]) {
@@ -161,29 +182,29 @@ scripts.console.run = function () {
 					switch (args[1]) {
 						case "lobby":
 						case "l":
-							if (args.length > 2) {
+							if (noFlairs.length > 2) {
 								var lobbyButton;
 								if (!parseInt(args[2])) {
 									lobbyButton = document.querySelectorAll("[ng-click='goto_lobby(" + app.lobbies[args[2]] + ")']");
-									if (window.location.pathname == "/lobby" && lobbyButton.length) {
+									if (window.location.pathname == "/lobby" && lobbyButton.length && !hasFlair(flairs, "-t")) {
 										lobbyButton[0].click();
 									}
 									else {
-										window.location.href = "/lobby#?id=" + app.lobbies[args[2]];
+										gotoPage("/lobby#?id=" + app.lobbies[args[2]], hasFlair(flairs, "-t"));
 									}
 								}
 								else {
 									lobbyButton = document.querySelectorAll("[ng-click='goto_lobby(" + args[2] + ")']");
-									if (window.location.pathname == "/lobby" && lobbyButton.length) {
+									if (window.location.pathname == "/lobby" && lobbyButton.length && !hasFlair(flairs, "-t")) {
 										lobbyButton[0].click();
 									}
 									else {
-										window.location.href = "/lobby#?id=" + args[2];
+										gotoPage("/lobby#?id=" + args[2], hasFlair(flairs, "-t"));
 									}
 								}
 							}
 							else {
-								window.location.href = "/lobby";
+								gotoPage("/lobby", hasFlair(flairs, "-t"));
 							}
 							
 							if (window.location.pathname == "/lobby") {
@@ -192,25 +213,25 @@ scripts.console.run = function () {
 							break;
 						case "user":
 						case "u":
-							if (args.length > 2) {
+							if (noFlairs.length > 2) {
 								if (!parseInt(args[2])) {
 									getId(args[2], function (id) {
 										if (id) {
-											window.location.href = "/user/" + id;
+											gotoPage("/user/" + id, hasFlair(flairs, "-t"));
 										}
 									});
 								}
 								else {
-									window.location.href = "/user/" + args[2];
+									gotoPage("/user/" + args[2], hasFlair(flairs, "-t"));
 								}
 							}
 							else {
-								window.location.href = "/user";
+								gotoPage("/user", hasFlair(flairs, "-t"));
 							}
 							break;
 						default:
 							if (app.goto[args[1]]) {
-								window.location.href = app.goto[args[1]];
+								gotoPage(app.goto[args[1]], hasFlair(flairs, "-t"));
 							}
 					}
 					break;
@@ -256,13 +277,13 @@ scripts.console.run = function () {
 					if (!parseInt(args[1])) {
 						getId(args[1], function (id) {
 							$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
-								window.postMessage({type: 'alert', text: data[1]}, "https://epicmafia.com");
+								sAlert(data[1]);
 							});
 						});
 					}
 					else {
 						$.post("/message", {msg: msg, subject: "", "recipients[]": args[1]}, function (data) {
-							window.postMessage({type: 'alert', text: data[1]}, "https://epicmafia.com");
+							sAlert(data[1]);
 						});
 					}
 					break;
@@ -292,31 +313,94 @@ scripts.console.run = function () {
 					switch(args[1]) {
 						case "next":
 						case "n":
-								window.location.href = curButton.nextSibling.childNodes[0].href;
+							gotoPage(curButton.nextSibling.childNodes[0].href, hasFlair(flairs, "-t"));
 							break;
 						case "prev":
 						case "pr":
-							window.location.href = curButton.previousSibling.childNodes[0].href;
+							gotoPage(curButton.previousSibling.childNodes[0].href, hasFlair(flairs, "-t"));
 							break;
 						case "last":
 						case "l":
-							window.location.href = document.getElementsByClassName("pagenav")[0].childNodes[document.getElementsByClassName("pagenav")[0].childNodes.length - 1].childNodes[0].href;
+							gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[document.getElementsByClassName("pagenav")[0].childNodes.length - 1].childNodes[0].href, hasFlair(flairs, "-t"));
 							break;
 						case "first":
 						case "f":
-							window.location.href = document.getElementsByClassName("pagenav")[0].childNodes[0].childNodes[0].href;
+							gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[0].childNodes[0].href, hasFlair(flairs, "-t"));
 							break;
 						case "page":
 						case "p":
-							window.location.href = "/topic/" + window.location.pathname.split("/")[2] + "?page=" + args[2];
+							gotoPage("/topic/" + window.location.pathname.split("/")[2] + "?page=" + args[2], hasFlair(flairs, "-t"));
 							break;
 						case "recent":
 						case "re":
-							window.location.href = document.getElementsByClassName("recent_topic")[args[2] - 1].childNodes[1].childNodes[0].href;
+							gotoPage(document.getElementsByClassName("recent_topic")[args[2] - 1].childNodes[1].childNodes[0].href, hasFlair(flairs, "-t"));
 							break;
+						case "go":
+							if (("complaints").indexOf(args[2]) != -1) {
+								gotoPage("https://epicmafia.com/forum/27", hasFlair(flairs, "-t"));
+							}
+							else if (("bug reports").indexOf(args[2]) != -1) {
+								gotoPage("https://epicmafia.com/forum/24", hasFlair(flairs, "-t"));
+							}
+							else {
+								var cycleForums = function (forums) {
+									var foundForum = false;
+									
+									forums.each(function () {
+										if ($(this).text().toLowerCase().indexOf(args[2]) != -1) {
+											foundForum = true;
+											gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+										}
+									});
+									
+									if (!foundForum) {
+										sAlert("Forum not found!");
+									}
+								};
+								
+								if (window.location.pathname == "/forum" || window.location.pathname.indexOf("/forum/lobby") ==0) {
+									cycleForums($(".forum_title"));
+								}
+								else {
+									var div = $("<div></div>");
+									$.get("/forum", function (data) {
+										div.html(data);
+										cycleForums(div.find(".forum_title"));
+									});
+								}
+							}
+							break;
+						case "topic":
+						case "t":
+							if (window.location.pathname.indexOf("/forum") == 0) {
+								var search = "";
+								for (var i = 2; i < noFlairs.length; i++) {
+									search += (noFlairs[i] + " ");
+								}
+								var foundTopic = false;
+								$(".forum_recent_link a").each(function () {
+									if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
+										foundTopic = true;
+										gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+									}
+								});
+								$(".topic-title").each(function () {
+									if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
+										foundTopic = true;
+										gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+									}
+								});
+								if (!foundTopic) {
+									sAlert("Matching topic not found!");
+								}
+							}
+							else {
+								sAlert("You can only use this command on a forum page!");
+							}
 					}
 					break;
 				case "poke":
+					sAlert("Returning all pokes...");
 					var pokes = [];
 					var i = 0;
 					var poke = function () {
@@ -340,12 +424,12 @@ scripts.console.run = function () {
 					$.get("/user/alts", function (data) {
 						data = data.alts;
 						if (parseInt(args[1])) {
-							window.location.href = "/user/load/" + data[args[1]].id;
+							gotoPage("/user/load/" + data[args[1]].id, hasFlair(flairs, "-t"));
 						}
 						else {
 							for (var i in data) {
 								if (data[i].username.toLowerCase().indexOf(args[1]) != -1) {
-									window.location.href = "/user/load/" + data[i].id;
+									gotoPage("/user/load/" + data[i].id, hasFlair(flairs, "-t"));
 								}
 							}
 						}
@@ -368,10 +452,10 @@ scripts.console.run = function () {
 					var id = $("[data-title='Game Statistics']").attr("href").split("/")[2];
 					$.post("https://epicmafia.com/friend/request", {userid: id}, function (data) {
 						if (data.status) {
-							window.postMessage({type: 'alert', text: 'Friend reqeust sent!'}, "https://epicmafia.com");
+							sAlert('Friend reqeust sent!');
 						}
 						else {
-							window.postMessage({type: "alert", text: data.msg}, "https://epicmafia.com");
+							sAlert(data.msg);
 						}
 					});
 					break;
@@ -380,15 +464,20 @@ scripts.console.run = function () {
 						args[0] = app.custom.commands[args[0]];
 						process(args.join(" "));
 					}
+					else {
+						sAlert(args[0] + " is not a known command!");
+					}
 			}
 		}
 		catch (e) {
+			/*
 			try {
-				window.postMessage({type: 'alert', text: String(e)}, "https://epicmafia.com");
+				sAlert(String(e));
 			}
 			catch (e2) {
 				console.log(e2);
 			}
+			*/
 		}
 		
 		if (shouldSave) {
@@ -398,6 +487,26 @@ scripts.console.run = function () {
 
 	var save = function () {
 		localStorage.emconsole = JSON.stringify(app);
+	};
+	
+	var sAlert = function (msg) {
+		window.postMessage({type: 'alert', text: msg}, "https://epicmafia.com");
+	};
+	
+	var hasFlair = function (arr, f) {
+		for (var i in arr) {
+			if (arr[i] == f) return true;
+		}
+		return false;
+	};
+	
+	var gotoPage = function (url, newTab) {
+		if (newTab) {
+			window.open(url);
+		}
+		else {
+			window.location = url;
+		}
 	};
 
 	var getId = function (name, cb) {
