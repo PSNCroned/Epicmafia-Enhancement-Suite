@@ -18,6 +18,7 @@ scripts.helper.run = function () {
 			<ul>\
 				<li><a href='/moderator'>Go to the list of mods</a></li>\
 				<li><a class='clink doneBub' data-action='joinGame'>Join an unranked game</a></li>\
+				<li><a href='/topic/81287'>Learn how to format lobby comments</a></li>\
 			</ul>\
 			";
 		elm = document.getElementsByClassName("clippy")[0];
