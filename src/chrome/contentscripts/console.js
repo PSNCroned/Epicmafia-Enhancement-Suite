@@ -167,6 +167,9 @@ scripts.console.run = function () {
 			<li>\
 				<b>friend</b> - Send a friend request to the user of the user page you're viewing\
 			</li>\
+			<li>\
+				<b>join *[index]</b> - Join game by index in game list (index does not count unjoinable games). Not specifying an index joins the first open game.\
+			</li>\
 		</ul>\
 		\
 		<b>Flairs</b><br>\
