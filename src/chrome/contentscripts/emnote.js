@@ -27,6 +27,8 @@ scripts.emnote.run = function () {
 			left: 0px;\
 			background-color: white;\
 			z-index: 49;\
+			border-right: 1px solid #999;\
+			border-bottom: 1px solid #999;\
 		}\
 		\
 		#noteInput {\

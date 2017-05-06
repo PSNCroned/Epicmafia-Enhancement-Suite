@@ -226,3 +226,29 @@ chrome.notifications.onClicked.addListener(function (id) {
 chrome.notifications.onClosed.addListener(function (id) {
 	delete notifs[id];
 });
+
+
+// ================= Fixing Lucid's Broken Crap ===================
+// He has a bug in his code in which switching lobbies using the url 
+// causes the lobby script to break. If you ever notice the lobby
+// you're in has the wrong background, that's why. This redirect to
+// a local version of the lobby script fixes that. I also reopen
+// access to angular debugging so scripts can better interact with
+// the page.
+
+chrome.webRequest.onBeforeRequest.addListener(function (data) {
+	if (data.url.indexOf("lobby_index") != -1) {
+		return {redirectUrl: chrome.runtime.getURL("/libs/lobby.js")};
+	}
+	else if (data.url.indexOf("message") != -1) {
+		return {redirectUrl: chrome.runtime.getURL("/libs/message.js")};
+	}
+	else {
+		return {redirectUrl: data.url}
+	}
+}, {
+	urls: [
+		"*://epicmafia.com/javascripts/m/lobby_index.js*",
+		"*://epicmafia.com/javascripts/app/message.js*"
+	]
+}, ["blocking"]);

@@ -8,10 +8,27 @@ scripts.console.run = function () {
 	   document.head.appendChild(script);
 	}
 
+	var save = function () {
+		localStorage.emconsole = JSON.stringify(app);
+	};
+	
+	var lobbyList = {"main":1,"sandbox":5,"games":6,"survivor":27,"competitive":3,"danganmafia":12,"outcast":69,"vidya":13,"snkmafia":42,"mafiastuck":56,"banneduserlobby":25,"undertale":236,"reverse":93,"stevenuniversemafia":197,"hetamafia":72,"bakerswag":102,"sportsanimemafia":100,"chrismclean":39,"colormafia":55,"personamafia":91,"talesofmafia":31,"multifandommafia":117,"phoenixwrightmafia":66,"nokillmafioso":11,"bakerswag2":103,"hsmafia":229,"videogames":44,"overwatchmafia":307,"bakerswag3":104,"bakerswag4":105,"vancy":9,"rwbymafia":132,"chronic":26,"fireemblem":187,"drgmafia":292,"illuminati":166,"open":40,"multiversemadness":176,"kagemafia":65,"test":20,"sparta":183,"naruto":124,"dailymafia":54,"herecomesdatmaf":323,"newdanganmafia":97,"hivecity":246,"crunk":142,"avalon":171,"anonymous":16,"whatmafia":144,"wearegods":34,"unlimitedbrettworks":8,"happyspermfamily":61,"testing":59,"coolkidsonly":113,"madokamafia":75,"mogekomafia":134,"ducksquad":165,"klkmafia":64,"squad":313,"undertalemafia":232,"bokunoheroacademia":290,"icepc":133,"shuutoku":121,"kino":80,"ghost":149,"teammafia":135,"dangerzone":322,"bisamafia":58,"enstars":325,"hipstermafia":128,"gold":17,"dogeteam":212,"mixmatchmafia":138,"customrolesonly":15,"adventure":60,"aamafia":52,"karaluchy":248,"angle":319,"mafiables":157,"xtraining":51,"liarsdice":119,"osomatsusan":258,"helix":158,"thenagilobby":77,"sumafia":283,"blastoise":200,"utdinnergames":268,"nihility":267,"takis":280,"cirnolobby":95,"ryuunobu":341,"doubtacademy":76,"mentors":244,"2roomsandaboom":71,"gaymes":130,"ttmlobby":328,"implyingmaf":249,"despairmafia":85,"lovebox":275,"tdwiki":298,"bbandvivor":28,"evolpz":340,"abyss":357,"emundertale":250,"ddmafia":203,"zeal":29,"yakuzapalooza":94,"hunterxhunter":287,"stickers":123,"chito":141,"pimpdown":277,"memeteam":336,"chickennugger":112,"rvbmafia":126,"memesus":216,"mutualpeak":79,"pointfarm":146,"amazon":182,"mentoring":74,"ygomafia":289,"fredbox":281,"idolhell":301,"spooky":218,"adblock":265,"pmdmaf":222,"points":192,"podsawesomelobby":155,"undertalecasual":284,"wolfpack":57,"talesofeggbear":78,"christianminglelobby":83,"vocamafia":161,"goatmafia":211,"stayout":33,"cittamafia":50,"elites":140,"funlobby":326,"sandbaax":327,"fusion":317,"maxifun":172,"mafiascum":184,"unnamedlobby":266,"splashpad":344,"bangarang":348,"gliese":101,"anarchy":304,"exalted":247,"noter":342,"plllobby123":109,"eiyumafia":168,"best":195,"ewangslayers":167,"family":217,"lukageo":306,"space":353,"sforestmafia":36,"pokemon":81,"dissentmafia":309,"treehouse":324,"duffs":227,"pancake":230,"secretlobby":82,"cute":339,"supremememes":352,"mainstreet":170,"epicmafiaidol":150,"superkent":233,"murderboat":329,"thechosen":169,"wifom":190,"bebop":320,"superkicks":338,"dysfunctional":199,"project":175,"happypeople":125,"party":207,"sloths":86,"sammmie":351,"definitely":343,"mechtesting":99,"jjbamafia":148,"supersmashcampus":174,"ryslig":206,"lobbyyy":213,"kodachrome":315,"lowresazamamafia":337,"socialism":347,"loll":178,"ijustwantedtomakeone":179,"aphforum":181,"fuckboys":220,"semesterofdesolation":164,"finalfantasymafiosos":173,"hazyville":332,"wishlist":186,"morgmafia":205,"mafianmoseby":271,"trophy":24,"remnantmafia":185,"anythinggoes":208,"scholomance":177,"macklelobby":234,"6duck":84,"kyuupiikei":241,"bikinibottom":257,"cahniverse":272,"cius":288,"didijusthearhope":310,"shittyyugiohmafia":269,"kingdomheartsmafia":295,"sodplus":300,"undermafia":335,"topsecret":89,"sonicthehedgehog":252,"earthbound":273,"tokens":274,"terubearufunhouse":354,"windylobby":253,"memers":152,"sokoisanerd":163,"theantivoid":308,"dogelobby":254,"utopia":270,"chillmafia":209,"nerdyassplurkmafia":215,"southpark":228,"main1":98,"mafiamatsu":356,"liam":256,"betmen":262,"farmlobby":264,"iwannabethemafia":30,"idolmafia":293,"super":346,"laboratorium":107,"underlook":291,"herogarbage":70,"lgbt":350,"ultimate":122,"dapperjim":180,"yoloswag":259,"greymistlake":260,"scream":261,"doubtacademymafia":321,"lulzsec":358,"epic":193,"mafiatama":210,"litterbox":286,"lukageo2":312,"maln":154,"ictwitmaf":131,"magimafia":162,"whocares":214,"showbymafia":294,"bulletdimension":303,"private":305,"voltronmafia":311,"usagi":330,"bananahammock":334,"smbx":188,"deathvalley":243,"spike":255,"carbon":202,"spicysinners":263,"platinum":18,"geomafia":318,"johnbatman":345,"junk":219,"diamond":19,"hello":47,"gerk":62,"gayrights":331,"feministrt":106,"thefiverlobbyists":115,"ghostsnfools":224,"cyanandco":41,"shslmafia":120,"wang":242,"tacobox":314,"deadnigger":191,"round100bronze":145,"gayexplosion":194,"dome":333,"asylum":349,"losttrophy":143,"michaelcerafanclub":189,"friendsmafia":196,"murderbox":282,"galaxycauldronmafia":302,"matsu":355,"laboratory":316};
+	
 	var localStorage = window.localStorage;
 	var app = localStorage.emconsole;
 	if (app) {
 		app = JSON.parse(app);
+		
+		//Check if they have the full lobby list
+		if (Object.keys(app.lobbies).length < Object.keys(lobbyList).length) {
+			console.log("new lobbies!");
+			for (var key in lobbyList) {
+				if (!(key in app.lobbies)) {
+					app.lobbies[key] = lobbyList[key];
+				}
+			}
+			save();
+		}
 	}
 	else {
 		app = {
@@ -30,18 +47,12 @@ scripts.console.run = function () {
 				forums: "/forum",
 				f: "/forum"
 			},
-			lobbies: {
-				main: 1,
-				sandbox: 5,
-				sbox: 5,
-				games: 6,
-				survivor: 27,
-				vivor: 27
-			},
+			lobbies: lobbyList,
 			custom: {
 				commands: {}
 			}
 		};
+		save();
 	}
 
 	var containerCSS = "\
@@ -106,9 +117,19 @@ scripts.console.run = function () {
 				<b>[down, d]</b> - Scroll down partially\
 			</li>\
 			<li>\
-				<b>pm</b> - Send a private message\
+				<b>pm</b> - Do stuff with private messages\
 				<ul>\
-					<li><i>pm [name, id] message</i></li>\
+					<li><i>pm [send, s] [name, id] message</i> - Send a pm directly from the console</li>\
+					<li><i>pm [open, o] [keyword, index]</i> - Open a pm by index or keyword visible from the inbox page. Also works remotely.</li>\
+					<li><i>pm [comp, c]</i> - Go to the pm composition page</li>\
+					<li><i>pm [inbox, all, i , a]</i> - Go to your inbox</li>\
+					<li><i>pm [unread, u]</i> - Go to your unread messages</li>\
+					<li><i>pm [sent, st]</i> - Go to your sent messages</li>\
+					<li><i>pm [next, n]</i> - Go to the next page of messages</li>\
+					<li><i>pm [prev, pr]</i> - Go to the previous page of messages</li>\
+					<li><i>pm [first, f]</i> - Go to the first page of messages</li>\
+					<li><i>pm [last, l]</i> - Go to the last page of messages</li>\
+					<li><i>pm [page, p] page#</i> - Go to the specified page of messages</li>\
 				</ul>\
 			</li>\
 			<li>\
@@ -118,6 +139,7 @@ scripts.console.run = function () {
 					<li><i>set goto [key] [url]</i> - Make/edit a goto key</li>\
 					<li><i>set delete [command]</i> - Deletes a custom command</li>\
 					<li><i>set delete goto [key]</i> - Deletes a goto key</li>\
+					<li><i>set delete lobby [key]</i> - Deletes a lobby key</li>\
 				</ul>\
 			</li>\
 			<li>\
@@ -183,20 +205,18 @@ scripts.console.run = function () {
 						case "lobby":
 						case "l":
 							if (noFlairs.length > 2) {
-								var lobbyButton;
+								var hasScope = $("#lobby_container").length > 0;
 								if (!parseInt(args[2])) {
-									lobbyButton = document.querySelectorAll("[ng-click='goto_lobby(" + app.lobbies[args[2]] + ")']");
-									if (window.location.pathname == "/lobby" && lobbyButton.length && !hasFlair(flairs, "-t")) {
-										lobbyButton[0].click();
+									if (hasScope && !hasFlair(flairs, "-t")) {
+										rScript("scope.goto_lobby(" + app.lobbies[args[2]] + ");");
 									}
 									else {
 										gotoPage("/lobby#?id=" + app.lobbies[args[2]], hasFlair(flairs, "-t"));
 									}
 								}
 								else {
-									lobbyButton = document.querySelectorAll("[ng-click='goto_lobby(" + args[2] + ")']");
-									if (window.location.pathname == "/lobby" && lobbyButton.length && !hasFlair(flairs, "-t")) {
-										lobbyButton[0].click();
+									if (hasScope && !hasFlair(flairs, "-t")) {
+										rScript("scope.goto_lobby(" + args[2] + ");");
 									}
 									else {
 										gotoPage("/lobby#?id=" + args[2], hasFlair(flairs, "-t"));
@@ -205,10 +225,6 @@ scripts.console.run = function () {
 							}
 							else {
 								gotoPage("/lobby", hasFlair(flairs, "-t"));
-							}
-							
-							if (window.location.pathname == "/lobby") {
-								window.location.reload();
 							}
 							break;
 						case "user":
@@ -269,41 +285,188 @@ scripts.console.run = function () {
 					window.scroll(0, window.scrollY + 500);
 					break;
 				case "pm":
-					var msg = "";
-					for (var i = 2; i < preservedCase.length; i++) {
-						msg += (preservedCase[i] + " ");
-					}
-					
-					if (!parseInt(args[1])) {
-						getId(args[1], function (id) {
-							$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
-								sAlert(data[1]);
-							});
-						});
-					}
-					else {
-						$.post("/message", {msg: msg, subject: "", "recipients[]": args[1]}, function (data) {
-							sAlert(data[1]);
-						});
+					switch (args[1]) {
+						case "send":
+						case "s":
+							var msg = "";
+							for (var i = 3; i < preservedCase.length; i++) {
+								msg += (preservedCase[i] + " ");
+							}
+
+							if (!parseInt(args[2])) {
+								getId(args[2], function (id) {
+									$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
+										sAlert(data[1]);
+									});
+								});
+							}
+							else {
+								$.post("/message", {msg: msg, subject: "", "recipients[]": args[2]}, function (data) {
+									sAlert(data[1]);
+								});
+							}
+							break;
+						
+						case "open":
+						case "o":
+							var messages = [];
+							
+							var cb = function (messages) {
+								if (parseInt(args[2])) {
+									if (window.location.pathname == "/message" && !hasFlair(flairs, "-t")) {
+										messages[args[2] - 1][0].click();
+									}
+									else {
+										gotoPage("/message" + messages[args[2] - 1].attr("href"), hasFlair(flairs, "-t"));
+									}
+								}
+								else {
+									var search = "";
+									for (var i = 2; i < noFlairs.length; i++) {
+										search += (noFlairs[i] + " ");
+									}
+									for (var i in messages) {
+										if (messages[i].text().toLowerCase().indexOf(search.trim()) != -1) {
+											if (!hasFlair(flairs, "-t")) {
+												messages[i][0].click();
+												break;
+											}
+											else {
+												gotoPage("/message" + messages[i].attr("href"), hasFlair(flairs, "-t"));
+											}
+										}
+									}
+								}
+							};
+							
+							if ($("#messages_table").length) {
+								$(".message").each(function () {
+									if (!$(this).hasClass("ng-hide")) {
+										messages.push($(this));
+									}
+								});
+								cb(messages);
+							}
+							else {
+								$.get("/message/fetch/all", function (data) {
+									var a, i;
+									data = data[1].data;
+									
+									for (i in data) {
+										a = document.createElement("a");
+										a.href = "/message#/message/" + data[i].id;
+										a.textContent = data[i].subject || data[i].msg;
+										messages.push($(a));
+									}
+									cb(messages);
+								});
+							}
+							break;
+						case "inbox":
+						case "i":
+						case "all":
+						case "a":
+							if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
+								$("#message_controls a")[0].click();
+							}
+							else {
+								gotoPage("/message", hasFlair(flairs, "-t"));
+							}
+							break;
+						case "compose":
+						case "comp":
+						case "c":
+							if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
+								$("#message_controls a")[1].click();
+							}
+							else {
+								gotoPage("/message#/compose", hasFlair(flairs, "-t"));
+							}
+							break;
+						case "unread":
+						case "u":
+							if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
+								$("#message_filters a:contains(Unread)")[0].click();
+							}
+							else {
+								gotoPage("/message#/unread", hasFlair(flairs, "-t"));
+							}
+							break;
+						case "sent":
+						case "st":
+							if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
+								$("#message_filters a:contains(Sent)")[0].click();
+							}
+							else {
+								gotoPage("/message#/sent", hasFlair(flairs, "-t"));
+							}
+							break;
+						case "next":
+						case "n":
+							if ($(".pagenav").length && window.location.pathname == "/message") {
+								rScript("if (scope.page < scope.pagenav.total_pages) {scope.setPage(scope.page + 1)}");
+							}
+							break;
+						case "prev":
+						case "pr":
+							if ($(".pagenav").length && window.location.pathname == "/message") {
+								rScript("if (scope.page > 1) {scope.setPage(scope.page - 1)}");
+							}
+							break;
+						case "page":
+						case "p":
+							rScript("var p = " + args[2] + "; if (p > 0 && p <= scope.pagenav.total_pages) {scope.setPage(p)}");
+							break;
+						case "last":
+						case "l":
+							rScript("scope.setPage(scope.pagenav.total_pages)");
+							break;
+						case "first":
+						case "f":
+							rScript("scope.setPage(1)");
+							break;
 					}
 					break;
 				case "set":
 					switch(args[1]) {
 						case "cmd":
 							app.custom.commands[args[2]] = args[3];
+							sAlert(args[2] + " now performs the same action as " + args[3]);
 							break;
 						case "delete":
 							switch (args[2]) {
 								case "goto":
 									delete app.goto[args[3]];
+									sAlert("Deleted custom navigation: " + args[3]);
 									break;
+								case "lobby":
+									delete app.lobbies[args[3]];
 								default:
 									delete app.custom.commands[args[2]];
+									sAlert("Deleted custom command: " + args[2]);
 							}
 							break;
 						case "goto":
 						case "go":
 							app.goto[args[2]] = args[3];
+							sAlert("You can now use 'go " + args[2] + "'");
+							break;
+						case "lobby":
+						case "l":
+							if (parseInt(args[3])) {
+								app.lobbies[args[2]] = parseInt(args[3]);
+								sAlert("You can now use 'go lobby " + args[2] + "'");
+							}
+							else {
+								if (app.lobbies[args[3]]) {
+									app.lobbies[args[2]] = app.lobbies[args[3]];
+									sAlert("You can now use 'go lobby " + args[2] + "'");
+								}
+								else {
+									sAlert("Lobby '" + args[3] + "' not found!");
+								}
+								
+							}
 							break;
 					}
 					break;
@@ -459,6 +622,34 @@ scripts.console.run = function () {
 						}
 					});
 					break;
+				case "join":
+					var open = [];
+					$.get("https://epicmafia.com/game/find", function (data) {
+						var games = JSON.parse(data[1]).data;
+						for (var i in games) {
+							if (games[i].gametype == "mafia" && !games[i].password && games[i].status_id == 0) {
+								open.push(games[i]);
+							}
+						}
+						
+						if (open.length > 0) {
+							if (noFlairs.length > 1) {
+								if (open[args[1] - 1]) {
+									gotoPage("https://epicmafia.com/game/" + open[args[1] - 1].id, hasFlair(flairs, "-t"));
+								}
+								else {
+									sAlert("Unable to join that game!");
+								}
+							}
+							else {
+								gotoPage("https://epicmafia.com/game/" + open[0].id, hasFlair(flairs, "-t"));
+							}
+						}
+						else {
+							sAlert("No open games!");
+						}
+					});
+					break;
 				default:
 					if (app.custom.commands[args[0]]) {
 						args[0] = app.custom.commands[args[0]];
@@ -484,13 +675,13 @@ scripts.console.run = function () {
 			save();
 		}
 	};
-
-	var save = function () {
-		localStorage.emconsole = JSON.stringify(app);
-	};
 	
 	var sAlert = function (msg) {
 		window.postMessage({type: 'alert', text: msg}, "https://epicmafia.com");
+	};
+	
+	var rScript = function (scr) {
+		window.postMessage({type: 'run', text: scr}, "https://epicmafia.com");
 	};
 	
 	var hasFlair = function (arr, f) {
@@ -530,6 +721,7 @@ scripts.console.run = function () {
 
 	container.id = "console";
 	container.style.cssText = containerCSS;
+	cons.id = "consoleInput";
 	cons.style.cssText = consoleCSS;
 
 	container.appendChild(cons);
@@ -555,7 +747,7 @@ scripts.console.run = function () {
 			app.show = "none";
 			save();
 		}
-		else if (e.which == 13 && container.style.display == "block") {
+		else if (e.which == 13 && container.style.display == "block" && document.activeElement.id == "consoleInput") {
 			//enter
 			process(cons.value);
 			cons.value = "";
