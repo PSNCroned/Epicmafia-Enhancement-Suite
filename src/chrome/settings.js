@@ -33,7 +33,12 @@ chrome.runtime.sendMessage({type: "popup"}, function (res) {
 });
 
 $("input[type='checkbox']").click(function () {
-	chrome.runtime.sendMessage({type: "set", key: $(this).parent().attr("id")});
+	if ($(this).parent().attr("id") != "pmnotifs") {
+		chrome.runtime.sendMessage({type: "set", key: $(this).parent().attr("id")});
+	}
+	else {
+		chrome.runtime.sendMessage({type: "pmnotifs"});
+	}
 });
 
 $(".optionLabel").click(function (e) {
@@ -45,8 +50,13 @@ $(".optionLabel").click(function (e) {
 		else {
 			box.prop("checked", true);
 		}
-
-		chrome.runtime.sendMessage({type: "set", key: $(this).parent().attr("id")});
+		
+		if ($(this).parent().attr("id") != "pmnotifs") {
+			chrome.runtime.sendMessage({type: "set", key: $(this).parent().attr("id")});
+		}
+		else {
+			chrome.runtime.sendMessage({type: "pmnotifs"});
+		}
 	}
 });
 
