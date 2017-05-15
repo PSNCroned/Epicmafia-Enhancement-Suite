@@ -57,7 +57,8 @@ chrome.storage.sync.get("ees", function (data) {
 		"helper": false,
 		"lastEmjack": 0,
 		"lastPm": 0,
-		"topics": {}
+		"topics": {},
+		"pmnotifs": true
 	};
 	
 	if (data.ees) {
@@ -121,44 +122,49 @@ chrome.runtime.onMessage.addListener(function (res, sender, sRes) {
 		case "popup":
 			sRes({type: "setting", val: settings});
 			break;
+		case "pmnotifs":
+			setting("pmnotifs", !settings.pmnotifs);
+			break;
 	}
 	return true;
 });
 
 var tenSecInt = setInterval(function () {
 	//PM Check
-	$.get("https://epicmafia.com/message/fetch/unread", function (data) {
-		var pms = data[1].data;
-		var newStart;
-		
-		for (var i in pms) {
-			if (pms[i].id > settings.lastPm && !pms[i].opened) {
-				console.log("New pm!");
-				(function (pmId) {
-					chrome.notifications.create(pmId, {type: "basic", iconUrl: "icons/notif.png", title: "New PM from " + pms[i].sender_username, message: pms[i].subject || (pms[i].msg.substring(0, 60) + "...")}, function (id) {
-						notifs[id] = {
-							type: "newpm",
-							pmId: pmId
-						};
-					});
-				})(String(pms[i].id));
-				if (!newStart) {
-					newStart = pms[i].id;
+	if (settings.pmnotifs) {
+		$.get("https://epicmafia.com/message/fetch/unread", function (data) {
+			var pms = data[1].data;
+			var newStart;
+
+			for (var i in pms) {
+				if (pms[i].id > settings.lastPm && !pms[i].opened) {
+					console.log("New pm!");
+					(function (pmId) {
+						chrome.notifications.create(pmId, {type: "basic", iconUrl: "icons/notif.png", title: "New PM from " + pms[i].sender_username, message: pms[i].subject || (pms[i].msg.substring(0, 60) + "...")}, function (id) {
+							notifs[id] = {
+								type: "newpm",
+								pmId: pmId
+							};
+						});
+					})(String(pms[i].id));
+					if (!newStart) {
+						newStart = pms[i].id;
+					}
 				}
 			}
-		}
-		console.log("Newstart: " + newStart);
-		if (newStart) {
-			settings.lastPm = newStart;
-			saveSettings();
-		}
-		
-		//Forum Check
-		var tids = Object.keys(settings.topics);
-		if (tids.length > 0) {
-			forumCheck(tids, 0);
-		}
-	});
+			console.log("Newstart: " + newStart);
+			if (newStart) {
+				settings.lastPm = newStart;
+				saveSettings();
+			}
+
+			//Forum Check
+			var tids = Object.keys(settings.topics);
+			if (tids.length > 0) {
+				forumCheck(tids, 0);
+			}
+		});
+	}
 }, 10000);
 
 var forumCheck = function (ids, i) {
