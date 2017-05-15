@@ -131,8 +131,8 @@ chrome.runtime.onMessage.addListener(function (res, sender, sRes) {
 
 var tenSecInt = setInterval(function () {
 	//PM Check
-	if (settings.pmnotifs) {
-		$.get("https://epicmafia.com/message/fetch/unread", function (data) {
+	$.get("https://epicmafia.com/message/fetch/unread", function (data) {
+		if (settings.pmnotifs) {
 			var pms = data[1].data;
 			var newStart;
 
@@ -157,14 +157,14 @@ var tenSecInt = setInterval(function () {
 				settings.lastPm = newStart;
 				saveSettings();
 			}
+		}
 
-			//Forum Check
-			var tids = Object.keys(settings.topics);
-			if (tids.length > 0) {
-				forumCheck(tids, 0);
-			}
-		});
-	}
+		//Forum Check
+		var tids = Object.keys(settings.topics);
+		if (tids.length > 0) {
+			forumCheck(tids, 0);
+		}
+	});
 }, 10000);
 
 var forumCheck = function (ids, i) {
