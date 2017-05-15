@@ -16,6 +16,9 @@ scripts.console.run = function () {
 	
 	var localStorage = window.localStorage;
 	var app = localStorage.emconsole;
+	var history = JSON.parse(localStorage.eesConsoleHistory || "[]");
+	var historyIndex = -1;
+	var tempConsVal = "";
 	if (app) {
 		app = JSON.parse(app);
 		
@@ -76,7 +79,8 @@ scripts.console.run = function () {
 
 	var helpPage = "\
 		<h1>EM Console Commands</h1>\
-		* = optional\
+		* = optional<br>\
+		Multiple commands can be separated by a semicolon to run them in succession.\
 		<ul>\
 			<li>\
 				<b>help</b> - Show this page\
@@ -111,10 +115,10 @@ scripts.console.run = function () {
 				<b>[bottom, bot]</b> - Scroll to bottom of page\
 			</li>\
 			<li>\
-				<b>[up, u]</b> - Scroll up partially\
+				<b>[up, u] [amount]</b> - Scroll up partially, amount is a multiple of 500px and defaults to 1\
 			</li>\
 			<li>\
-				<b>[down, d]</b> - Scroll down partially\
+				<b>[down, d] [amount]</b> - Scroll down partially, amount is a multiple of 500px and defaults to 1\
 			</li>\
 			<li>\
 				<b>pm</b> - Do stuff with private messages\
@@ -170,6 +174,16 @@ scripts.console.run = function () {
 			<li>\
 				<b>join *[index]</b> - Join game by index in game list (index does not count unjoinable games). Not specifying an index joins the first open game.\
 			</li>\
+			<li>\
+				<b>wait [time]</b> - Waits the specified amount of miliseconds between two commands running in succession.\
+			</li>\
+			<li>\
+				<b>[macro, m]</b> - Make easy-to-access command combos\
+				<ul>\
+					<li><i>m [edit, e] [name]</i> - Opens a popup where you can edit the given macro</li>\
+					<li><i>m [run, r] [name]</i> - Run the given macro</li>\
+				</ul>\
+			</li>\
 		</ul>\
 		\
 		<b>Flairs</b><br>\
@@ -181,501 +195,593 @@ scripts.console.run = function () {
 			</li>\
 		</ul>\
 	";
+	
+	var macroModal = document.createElement("div");
+	macroModal.innerHTML = "\
+		<div id='macroModal' style='display: none; position: fixed; top: 0px; width: 100%; height: 100%; z-index: 1000;'>\
+			<div style='margin: auto; width: 1000px; background-color: white; position: relative; top: 50%; transform: translateY(-50%); padding: 20px; box-shadow: 0px 0px 20px 1px rgba(0,0,0,0.75);'>\
+				<div class='modal-header' style='margin: auto; width: 1000px; text-align: center; font-size: 35px; padding: 10px;'>\
+					<h4>Editing Macro \"<span id='macroName'></span>\"</h4>\
+				</div>\
+				<div class='modal-body' style='margin: auto; width: 1000px; text-align: center; padding-bottom: 10px;'>\
+					<input type='text' id='macroInput' style='width: 500px; font-size: 20px; border: 1px solid #444; padding: 2px;' />\
+				</div>\
+				<div class='modal-footer' style='margin: auto; width: 1000px; text-align: center;'>\
+					<button id='cancelMacro' style='font-size: 20px; padding: 5px; border: 1px solid #444; cursor: pointer;'>Cancel</button>\
+					<button id='saveMacro' style='font-size: 20px; padding: 5px; border: 1px solid #444; cursor: pointer;'>Save</button>\
+				</div>\
+			</div>\
+		</div>";
 
 	var process = function (cmd) {
-		var shouldSave = true;
-		var args = cmd.toLowerCase().split(" ");
-		var preservedCase = cmd.split(" ");
-		var flairs = [];
-		var noFlairs = [];
-		for (var i in args) {
-			if (args[i].indexOf("-") == 0) {
-				flairs.push(args[i]);
-			}
-			else {
-				noFlairs.push(args[i]);
-			}
+		if (cmd[cmd.length - 1] == ";") {
+			cmd.replace(";", "");
 		}
-		
-		try {
-			switch (args[0]) {
-				case "help":
-					window.open().document.body.innerHTML += helpPage;
-					break;
-				case "goto":
-				case "go":
-					switch (args[1]) {
-						case "lobby":
-						case "l":
-							if (noFlairs.length > 2) {
-								var hasScope = $("#lobby_container").length > 0;
-								if (!parseInt(args[2])) {
-									if (hasScope && !hasFlair(flairs, "-t")) {
-										rScript("scope.goto_lobby(" + app.lobbies[args[2]] + ");");
+		var combo = cmd.toLowerCase().trim().split(";");
+		if (combo.length == 1) {
+			var shouldSave = true;
+			var args = cmd.toLowerCase().trim().split(" ");
+			var preservedCase = cmd.split(" ");
+			var flairs = [];
+			var noFlairs = [];
+			for (var i in args) {
+				if (args[i].indexOf("-") == 0) {
+					flairs.push(args[i]);
+				}
+				else {
+					noFlairs.push(args[i]);
+				}
+			}
+
+			try {
+				switch (args[0]) {
+					case "help":
+						window.open().document.body.innerHTML += helpPage;
+						checkCombos();
+						break;
+					case "goto":
+					case "go":
+						switch (args[1]) {
+							case "lobby":
+							case "l":
+								if (noFlairs.length > 2) {
+									var hasScope = $("#lobby_container").length > 0;
+									if (!parseInt(args[2])) {
+										if (hasScope && !hasFlair(flairs, "-t")) {
+											rScript("scope.goto_lobby(" + app.lobbies[args[2]] + ");");
+											checkCombos();
+										}
+										else {
+											gotoPage("/lobby#?id=" + app.lobbies[args[2]], hasFlair(flairs, "-t"));
+										}
 									}
 									else {
-										gotoPage("/lobby#?id=" + app.lobbies[args[2]], hasFlair(flairs, "-t"));
+										if (hasScope && !hasFlair(flairs, "-t")) {
+											rScript("scope.goto_lobby(" + args[2] + ");");
+											checkCombos();
+										}
+										else {
+											gotoPage("/lobby#?id=" + args[2], hasFlair(flairs, "-t"));
+										}
 									}
 								}
 								else {
-									if (hasScope && !hasFlair(flairs, "-t")) {
-										rScript("scope.goto_lobby(" + args[2] + ");");
+									gotoPage("/lobby", hasFlair(flairs, "-t"));
+								}
+								break;
+							case "user":
+							case "u":
+								if (noFlairs.length > 2) {
+									if (!parseInt(args[2])) {
+										getId(args[2], function (id) {
+											if (id) {
+												gotoPage("/user/" + id, hasFlair(flairs, "-t"));
+											}
+										});
 									}
 									else {
-										gotoPage("/lobby#?id=" + args[2], hasFlair(flairs, "-t"));
+										gotoPage("/user/" + args[2], hasFlair(flairs, "-t"));
 									}
 								}
-							}
-							else {
-								gotoPage("/lobby", hasFlair(flairs, "-t"));
-							}
-							break;
-						case "user":
-						case "u":
-							if (noFlairs.length > 2) {
+								else {
+									gotoPage("/user", hasFlair(flairs, "-t"));
+								}
+								break;
+							default:
+								if (app.goto[args[1]]) {
+									gotoPage(app.goto[args[1]], hasFlair(flairs, "-t"));
+								}
+						}
+						break;
+					case "back":
+					case "b":
+						window.history.back();
+					case "forward":
+					case "fwd":
+					case "fr":
+						window.history.forward();
+						break;
+					case "reset":
+						shouldSave = false;
+						localStorage.removeItem("emconsole");
+						window.location.reload();
+						break;
+					case "refresh":
+					case "re":
+					case "r":
+						window.location.reload();
+						break;
+					case "top":
+						window.scrollTo(0, 0);
+						checkCombos();
+						break;
+					case "bottom":
+					case "bot":
+						window.scrollTo(0,document.body.scrollHeight);
+						checkCombos();
+						break;
+					case "up":
+					case "u":
+						window.scroll(0, window.scrollY - (500 * (parseInt(args[1]) || 1)));
+						checkCombos();
+						break;
+					case "down":
+					case "d":
+						window.scroll(0, window.scrollY + (500 * (parseInt(args[1]) || 1)));
+						checkCombos();
+						break;
+					case "pm":
+						switch (args[1]) {
+							case "send":
+							case "s":
+								var msg = "";
+								for (var i = 3; i < preservedCase.length; i++) {
+									msg += (preservedCase[i] + " ");
+								}
+
 								if (!parseInt(args[2])) {
 									getId(args[2], function (id) {
-										if (id) {
-											gotoPage("/user/" + id, hasFlair(flairs, "-t"));
-										}
+										$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
+											sAlert(data[1]);
+											checkCombos();
+										});
 									});
 								}
 								else {
-									gotoPage("/user/" + args[2], hasFlair(flairs, "-t"));
-								}
-							}
-							else {
-								gotoPage("/user", hasFlair(flairs, "-t"));
-							}
-							break;
-						default:
-							if (app.goto[args[1]]) {
-								gotoPage(app.goto[args[1]], hasFlair(flairs, "-t"));
-							}
-					}
-					break;
-				case "back":
-				case "b":
-					window.history.back();
-				case "forward":
-				case "fwd":
-				case "fr":
-					window.history.forward();
-					break;
-				case "reset":
-					shouldSave = false;
-					localStorage.removeItem("emconsole");
-					window.location.reload();
-					break;
-				case "refresh":
-				case "re":
-				case "r":
-					window.location.reload();
-					break;
-				case "top":
-					window.scrollTo(0, 0);
-					break;
-				case "bottom":
-				case "bot":
-					window.scrollTo(0,document.body.scrollHeight);
-					break;
-				case "up":
-				case "u":
-					window.scroll(0, window.scrollY - 500);
-					break;
-				case "down":
-				case "d":
-					window.scroll(0, window.scrollY + 500);
-					break;
-				case "pm":
-					switch (args[1]) {
-						case "send":
-						case "s":
-							var msg = "";
-							for (var i = 3; i < preservedCase.length; i++) {
-								msg += (preservedCase[i] + " ");
-							}
-
-							if (!parseInt(args[2])) {
-								getId(args[2], function (id) {
-									$.post("/message", {msg: msg, subject: "", "recipients[]": id}, function (data) {
+									$.post("/message", {msg: msg, subject: "", "recipients[]": args[2]}, function (data) {
 										sAlert(data[1]);
+										checkCombos();
 									});
-								});
-							}
-							else {
-								$.post("/message", {msg: msg, subject: "", "recipients[]": args[2]}, function (data) {
-									sAlert(data[1]);
-								});
-							}
-							break;
-						
-						case "open":
-						case "o":
-							var messages = [];
-							
-							var cb = function (messages) {
-								if (parseInt(args[2])) {
-									if (window.location.pathname == "/message" && !hasFlair(flairs, "-t")) {
-										messages[args[2] - 1][0].click();
+								}
+								break;
+
+							case "open":
+							case "o":
+								var messages = [];
+
+								var cb = function (messages) {
+									if (parseInt(args[2])) {
+										if (window.location.pathname == "/message" && !hasFlair(flairs, "-t")) {
+											messages[args[2] - 1][0].click();
+											checkCombos();
+										}
+										else {
+											gotoPage("/message" + messages[args[2] - 1].attr("href"), hasFlair(flairs, "-t"));
+										}
 									}
 									else {
-										gotoPage("/message" + messages[args[2] - 1].attr("href"), hasFlair(flairs, "-t"));
+										var search = "";
+										for (var i = 2; i < noFlairs.length; i++) {
+											search += (noFlairs[i] + " ");
+										}
+										for (var i in messages) {
+											if (messages[i].text().toLowerCase().indexOf(search.trim()) != -1) {
+												if (!hasFlair(flairs, "-t")) {
+													messages[i][0].click();
+													checkCombos();
+													break;
+												}
+												else {
+													gotoPage("/message" + messages[i].attr("href"), hasFlair(flairs, "-t"));
+												}
+											}
+										}
 									}
+								};
+
+								if ($("#messages_table").length) {
+									$(".message").each(function () {
+										if (!$(this).hasClass("ng-hide")) {
+											messages.push($(this));
+										}
+									});
+									cb(messages);
 								}
 								else {
+									$.get("/message/fetch/all", function (data) {
+										var a, i;
+										data = data[1].data;
+
+										for (i in data) {
+											a = document.createElement("a");
+											a.href = "/message#/message/" + data[i].id;
+											a.textContent = data[i].subject || data[i].msg;
+											messages.push($(a));
+										}
+										cb(messages);
+									});
+								}
+								break;
+							case "inbox":
+							case "i":
+							case "all":
+							case "a":
+								if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
+									$("#message_controls a")[0].click();
+									checkCombos();
+								}
+								else {
+									gotoPage("/message", hasFlair(flairs, "-t"));
+								}
+								break;
+							case "compose":
+							case "comp":
+							case "c":
+								if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
+									$("#message_controls a")[1].click();
+									checkCombos();
+								}
+								else {
+									gotoPage("/message#/compose", hasFlair(flairs, "-t"));
+								}
+								break;
+							case "unread":
+							case "u":
+								if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
+									$("#message_filters a:contains(Unread)")[0].click();
+									checkCombos();
+								}
+								else {
+									gotoPage("/message#/unread", hasFlair(flairs, "-t"));
+								}
+								break;
+							case "sent":
+							case "st":
+								if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
+									$("#message_filters a:contains(Sent)")[0].click();
+									checkCombos();
+								}
+								else {
+									gotoPage("/message#/sent", hasFlair(flairs, "-t"));
+								}
+								break;
+							case "next":
+							case "n":
+								if ($(".pagenav").length && window.location.pathname == "/message") {
+									rScript("if (scope.page < scope.pagenav.total_pages) {scope.setPage(scope.page + 1)}");
+								}
+								checkCombos();
+								break;
+							case "prev":
+							case "pr":
+								if ($(".pagenav").length && window.location.pathname == "/message") {
+									rScript("if (scope.page > 1) {scope.setPage(scope.page - 1)}");
+								}
+								checkCombos();
+								break;
+							case "page":
+							case "p":
+								rScript("var p = " + args[2] + "; if (p > 0 && p <= scope.pagenav.total_pages) {scope.setPage(p)}");
+								checkCombos();
+								break;
+							case "last":
+							case "l":
+								rScript("scope.setPage(scope.pagenav.total_pages)");
+								checkCombos();
+								break;
+							case "first":
+							case "f":
+								rScript("scope.setPage(1)");
+								checkCombos();
+								break;
+						}
+						break;
+					case "set":
+						switch(args[1]) {
+							case "cmd":
+								app.custom.commands[args[2]] = args[3];
+								sAlert(args[2] + " now performs the same action as " + args[3]);
+								break;
+							case "delete":
+								switch (args[2]) {
+									case "goto":
+										delete app.goto[args[3]];
+										sAlert("Deleted custom navigation: " + args[3]);
+										break;
+									case "lobby":
+										delete app.lobbies[args[3]];
+									default:
+										delete app.custom.commands[args[2]];
+										sAlert("Deleted custom command: " + args[2]);
+								}
+								break;
+							case "goto":
+							case "go":
+								app.goto[args[2]] = args[3];
+								sAlert("You can now use 'go " + args[2] + "'");
+								break;
+							case "lobby":
+							case "l":
+								if (parseInt(args[3])) {
+									app.lobbies[args[2]] = parseInt(args[3]);
+									sAlert("You can now use 'go lobby " + args[2] + "'");
+								}
+								else {
+									if (app.lobbies[args[3]]) {
+										app.lobbies[args[2]] = app.lobbies[args[3]];
+										sAlert("You can now use 'go lobby " + args[2] + "'");
+									}
+									else {
+										sAlert("Lobby '" + args[3] + "' not found!");
+									}
+
+								}
+								break;
+						}
+						checkCombos();
+						break;
+					case "forum":
+					case "f":
+						var curButton = document.getElementsByClassName("selected")[0];
+						switch(args[1]) {
+							case "next":
+							case "n":
+								gotoPage(curButton.nextSibling.childNodes[0].href, hasFlair(flairs, "-t"));
+								break;
+							case "prev":
+							case "pr":
+								gotoPage(curButton.previousSibling.childNodes[0].href, hasFlair(flairs, "-t"));
+								break;
+							case "last":
+							case "l":
+								gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[document.getElementsByClassName("pagenav")[0].childNodes.length - 1].childNodes[0].href, hasFlair(flairs, "-t"));
+								break;
+							case "first":
+							case "f":
+								gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[0].childNodes[0].href, hasFlair(flairs, "-t"));
+								break;
+							case "page":
+							case "p":
+								gotoPage("/topic/" + window.location.pathname.split("/")[2] + "?page=" + args[2], hasFlair(flairs, "-t"));
+								break;
+							case "recent":
+							case "re":
+								gotoPage(document.getElementsByClassName("recent_topic")[args[2] - 1].childNodes[1].childNodes[0].href, hasFlair(flairs, "-t"));
+								break;
+							case "go":
+								if (("complaints").indexOf(args[2]) != -1) {
+									gotoPage("https://epicmafia.com/forum/27", hasFlair(flairs, "-t"));
+								}
+								else if (("bug reports").indexOf(args[2]) != -1) {
+									gotoPage("https://epicmafia.com/forum/24", hasFlair(flairs, "-t"));
+								}
+								else {
+									var cycleForums = function (forums) {
+										var foundForum = false;
+
+										forums.each(function () {
+											if ($(this).text().toLowerCase().indexOf(args[2]) != -1) {
+												foundForum = true;
+												gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+											}
+										});
+
+										if (!foundForum) {
+											sAlert("Forum not found!");
+											checkCombos();
+										}
+									};
+
+									if (window.location.pathname == "/forum" || window.location.pathname.indexOf("/forum/lobby") ==0) {
+										cycleForums($(".forum_title"));
+									}
+									else {
+										var div = $("<div></div>");
+										$.get("/forum", function (data) {
+											div.html(data);
+											cycleForums(div.find(".forum_title"));
+										});
+									}
+								}
+								break;
+							case "topic":
+							case "t":
+								if (window.location.pathname.indexOf("/forum") == 0) {
 									var search = "";
 									for (var i = 2; i < noFlairs.length; i++) {
 										search += (noFlairs[i] + " ");
 									}
-									for (var i in messages) {
-										if (messages[i].text().toLowerCase().indexOf(search.trim()) != -1) {
-											if (!hasFlair(flairs, "-t")) {
-												messages[i][0].click();
-												break;
-											}
-											else {
-												gotoPage("/message" + messages[i].attr("href"), hasFlair(flairs, "-t"));
-											}
-										}
-									}
-								}
-							};
-							
-							if ($("#messages_table").length) {
-								$(".message").each(function () {
-									if (!$(this).hasClass("ng-hide")) {
-										messages.push($(this));
-									}
-								});
-								cb(messages);
-							}
-							else {
-								$.get("/message/fetch/all", function (data) {
-									var a, i;
-									data = data[1].data;
-									
-									for (i in data) {
-										a = document.createElement("a");
-										a.href = "/message#/message/" + data[i].id;
-										a.textContent = data[i].subject || data[i].msg;
-										messages.push($(a));
-									}
-									cb(messages);
-								});
-							}
-							break;
-						case "inbox":
-						case "i":
-						case "all":
-						case "a":
-							if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
-								$("#message_controls a")[0].click();
-							}
-							else {
-								gotoPage("/message", hasFlair(flairs, "-t"));
-							}
-							break;
-						case "compose":
-						case "comp":
-						case "c":
-							if (!hasFlair(flairs, "-t") && window.location.pathname == "/message") {
-								$("#message_controls a")[1].click();
-							}
-							else {
-								gotoPage("/message#/compose", hasFlair(flairs, "-t"));
-							}
-							break;
-						case "unread":
-						case "u":
-							if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
-								$("#message_filters a:contains(Unread)")[0].click();
-							}
-							else {
-								gotoPage("/message#/unread", hasFlair(flairs, "-t"));
-							}
-							break;
-						case "sent":
-						case "st":
-							if ($("#message_filters").length && !hasFlair(flairs, "-t")) {
-								$("#message_filters a:contains(Sent)")[0].click();
-							}
-							else {
-								gotoPage("/message#/sent", hasFlair(flairs, "-t"));
-							}
-							break;
-						case "next":
-						case "n":
-							if ($(".pagenav").length && window.location.pathname == "/message") {
-								rScript("if (scope.page < scope.pagenav.total_pages) {scope.setPage(scope.page + 1)}");
-							}
-							break;
-						case "prev":
-						case "pr":
-							if ($(".pagenav").length && window.location.pathname == "/message") {
-								rScript("if (scope.page > 1) {scope.setPage(scope.page - 1)}");
-							}
-							break;
-						case "page":
-						case "p":
-							rScript("var p = " + args[2] + "; if (p > 0 && p <= scope.pagenav.total_pages) {scope.setPage(p)}");
-							break;
-						case "last":
-						case "l":
-							rScript("scope.setPage(scope.pagenav.total_pages)");
-							break;
-						case "first":
-						case "f":
-							rScript("scope.setPage(1)");
-							break;
-					}
-					break;
-				case "set":
-					switch(args[1]) {
-						case "cmd":
-							app.custom.commands[args[2]] = args[3];
-							sAlert(args[2] + " now performs the same action as " + args[3]);
-							break;
-						case "delete":
-							switch (args[2]) {
-								case "goto":
-									delete app.goto[args[3]];
-									sAlert("Deleted custom navigation: " + args[3]);
-									break;
-								case "lobby":
-									delete app.lobbies[args[3]];
-								default:
-									delete app.custom.commands[args[2]];
-									sAlert("Deleted custom command: " + args[2]);
-							}
-							break;
-						case "goto":
-						case "go":
-							app.goto[args[2]] = args[3];
-							sAlert("You can now use 'go " + args[2] + "'");
-							break;
-						case "lobby":
-						case "l":
-							if (parseInt(args[3])) {
-								app.lobbies[args[2]] = parseInt(args[3]);
-								sAlert("You can now use 'go lobby " + args[2] + "'");
-							}
-							else {
-								if (app.lobbies[args[3]]) {
-									app.lobbies[args[2]] = app.lobbies[args[3]];
-									sAlert("You can now use 'go lobby " + args[2] + "'");
-								}
-								else {
-									sAlert("Lobby '" + args[3] + "' not found!");
-								}
-								
-							}
-							break;
-					}
-					break;
-				case "forum":
-				case "f":
-					var curButton = document.getElementsByClassName("selected")[0];
-					switch(args[1]) {
-						case "next":
-						case "n":
-							gotoPage(curButton.nextSibling.childNodes[0].href, hasFlair(flairs, "-t"));
-							break;
-						case "prev":
-						case "pr":
-							gotoPage(curButton.previousSibling.childNodes[0].href, hasFlair(flairs, "-t"));
-							break;
-						case "last":
-						case "l":
-							gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[document.getElementsByClassName("pagenav")[0].childNodes.length - 1].childNodes[0].href, hasFlair(flairs, "-t"));
-							break;
-						case "first":
-						case "f":
-							gotoPage(document.getElementsByClassName("pagenav")[0].childNodes[0].childNodes[0].href, hasFlair(flairs, "-t"));
-							break;
-						case "page":
-						case "p":
-							gotoPage("/topic/" + window.location.pathname.split("/")[2] + "?page=" + args[2], hasFlair(flairs, "-t"));
-							break;
-						case "recent":
-						case "re":
-							gotoPage(document.getElementsByClassName("recent_topic")[args[2] - 1].childNodes[1].childNodes[0].href, hasFlair(flairs, "-t"));
-							break;
-						case "go":
-							if (("complaints").indexOf(args[2]) != -1) {
-								gotoPage("https://epicmafia.com/forum/27", hasFlair(flairs, "-t"));
-							}
-							else if (("bug reports").indexOf(args[2]) != -1) {
-								gotoPage("https://epicmafia.com/forum/24", hasFlair(flairs, "-t"));
-							}
-							else {
-								var cycleForums = function (forums) {
-									var foundForum = false;
-									
-									forums.each(function () {
-										if ($(this).text().toLowerCase().indexOf(args[2]) != -1) {
-											foundForum = true;
+									var foundTopic = false;
+									$(".forum_recent_link a").each(function () {
+										if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
+											foundTopic = true;
 											gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
 										}
 									});
-									
-									if (!foundForum) {
-										sAlert("Forum not found!");
+									$(".topic-title").each(function () {
+										if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
+											foundTopic = true;
+											gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+										}
+									});
+									if (!foundTopic) {
+										sAlert("Matching topic not found!");
+										checkCombos();
 									}
-								};
-								
-								if (window.location.pathname == "/forum" || window.location.pathname.indexOf("/forum/lobby") ==0) {
-									cycleForums($(".forum_title"));
 								}
 								else {
-									var div = $("<div></div>");
-									$.get("/forum", function (data) {
-										div.html(data);
-										cycleForums(div.find(".forum_title"));
-									});
+									sAlert("You can only use this command on a forum page!");
+									checkCombos();
 								}
-							}
-							break;
-						case "topic":
-						case "t":
-							if (window.location.pathname.indexOf("/forum") == 0) {
-								var search = "";
-								for (var i = 2; i < noFlairs.length; i++) {
-									search += (noFlairs[i] + " ");
-								}
-								var foundTopic = false;
-								$(".forum_recent_link a").each(function () {
-									if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
-										foundTopic = true;
-										gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+						}
+						break;
+					case "poke":
+						if ($(".poke_back").length) {
+							sAlert("Returning all pokes...");
+							var pokes = [];
+							var i = 0;
+							var poke = function () {
+								$.get(pokes[i], function () {
+									i ++;
+									if (i < pokes.length) {
+										poke();
+									}
+									else {
+										window.location.reload();
 									}
 								});
-								$(".topic-title").each(function () {
-									if ($(this).text().toLowerCase().indexOf(search.trim()) != -1) {
-										foundTopic = true;
-										gotoPage($(this).attr("href"), hasFlair(flairs, "-t"));
+							};
+
+							$(".poke_back").each(function() {
+								pokes.push($(this).attr("href"));
+							});
+							poke();
+						}
+						checkCombos();
+						break;
+					case "alt":
+						$.get("/user/alts", function (data) {
+							data = data.alts;
+							if (parseInt(args[1])) {
+								gotoPage("/user/load/" + data[args[1]].id, hasFlair(flairs, "-t"));
+							}
+							else {
+								for (var i in data) {
+									if (data[i].username.toLowerCase().indexOf(args[1]) != -1) {
+										gotoPage("/user/load/" + data[i].id, hasFlair(flairs, "-t"));
 									}
-								});
-								if (!foundTopic) {
-									sAlert("Matching topic not found!");
 								}
-							}
-							else {
-								sAlert("You can only use this command on a forum page!");
-							}
-					}
-					break;
-				case "poke":
-					sAlert("Returning all pokes...");
-					var pokes = [];
-					var i = 0;
-					var poke = function () {
-						$.get(pokes[i], function () {
-							i ++;
-							if (i < pokes.length) {
-								poke();
-							}
-							else {
-								window.location.reload();
 							}
 						});
-					};
-					
-					$(".poke_back").each(function() {
-						pokes.push($(this).attr("href"));
-					});
-					poke();
-					break;
-				case "alt":
-					$.get("/user/alts", function (data) {
-						data = data.alts;
-						if (parseInt(args[1])) {
-							gotoPage("/user/load/" + data[args[1]].id, hasFlair(flairs, "-t"));
+						break;
+					case "close":
+						chrome.runtime.sendMessage({type: "close"});
+						break;
+					case "ees":
+						switch (args[1]) {
+							case "set":
+								chrome.runtime.sendMessage({type: "set", key: args[2]});
+								break;
+							case "clear":
+								chrome.runtime.sendMessage({type: "clear"});
+								break;
 						}
-						else {
-							for (var i in data) {
-								if (data[i].username.toLowerCase().indexOf(args[1]) != -1) {
-									gotoPage("/user/load/" + data[i].id, hasFlair(flairs, "-t"));
+						checkCombos();
+						break;
+					case "friend":
+						var id = $("[data-title='Game Statistics']").attr("href").split("/")[2];
+						$.post("https://epicmafia.com/friend/request", {userid: id}, function (data) {
+							if (data.status) {
+								sAlert('Friend reqeust sent!');
+							}
+							else {
+								sAlert(data.msg);
+							}
+							checkCombos();
+						});
+						break;
+					case "join":
+						var open = [];
+						$.get("https://epicmafia.com/game/find", function (data) {
+							var games = JSON.parse(data[1]).data;
+							for (var i in games) {
+								if (games[i].gametype == "mafia" && !games[i].password && games[i].status_id == 0) {
+									open.push(games[i]);
 								}
 							}
-						}
-					});
-					break;
-				case "close":
-					chrome.runtime.sendMessage({type: "close"});
-					break;
-				case "ees":
-					switch (args[1]) {
-						case "set":
-							chrome.runtime.sendMessage({type: "set", key: args[2]});
-							break;
-						case "clear":
-							chrome.runtime.sendMessage({type: "clear"});
-							break;
-					}
-					break;
-				case "friend":
-					var id = $("[data-title='Game Statistics']").attr("href").split("/")[2];
-					$.post("https://epicmafia.com/friend/request", {userid: id}, function (data) {
-						if (data.status) {
-							sAlert('Friend reqeust sent!');
-						}
-						else {
-							sAlert(data.msg);
-						}
-					});
-					break;
-				case "join":
-					var open = [];
-					$.get("https://epicmafia.com/game/find", function (data) {
-						var games = JSON.parse(data[1]).data;
-						for (var i in games) {
-							if (games[i].gametype == "mafia" && !games[i].password && games[i].status_id == 0) {
-								open.push(games[i]);
-							}
-						}
-						
-						if (open.length > 0) {
-							if (noFlairs.length > 1) {
-								if (open[args[1] - 1]) {
-									gotoPage("https://epicmafia.com/game/" + open[args[1] - 1].id, hasFlair(flairs, "-t"));
+
+							if (open.length > 0) {
+								if (noFlairs.length > 1) {
+									if (open[args[1] - 1]) {
+										gotoPage("https://epicmafia.com/game/" + open[args[1] - 1].id, hasFlair(flairs, "-t"));
+									}
+									else {
+										sAlert("Unable to join that game!");
+										checkCombos();
+									}
 								}
 								else {
-									sAlert("Unable to join that game!");
+									gotoPage("https://epicmafia.com/game/" + open[0].id, hasFlair(flairs, "-t"));
 								}
 							}
 							else {
-								gotoPage("https://epicmafia.com/game/" + open[0].id, hasFlair(flairs, "-t"));
+								sAlert("No open games!");
+								checkCombos();
 							}
+						});
+						break;
+					case "wait":
+						setTimeout(function () {
+							checkCombos();
+						}, args[1]);
+						break;
+					case "macro":
+					case "m":
+						switch (args[1]) {
+							case "edit":
+							case "e":
+								if (!app.custom.macros) {
+									app.custom.macros = {};
+								}
+								editMacro(args[2]);
+								break;
+							case "run":
+							case "r":
+								if (app.custom.macros) {
+									if (app.custom.macros[args[2]]) {
+										process(app.custom.macros[args[2]]);
+									}
+									else {
+										sAlert("Macro " + args[2] + " does not exist!");
+									}
+								}
+								else {
+									app.custom.macros = {};
+									sAlert("Macro " + args[2] + " does not exist!");
+								}
+								break;
+						}
+						break;
+					default:
+						if (app.custom.commands[args[0]]) {
+							args[0] = app.custom.commands[args[0]];
+							process(args.join(" "));
 						}
 						else {
-							sAlert("No open games!");
+							sAlert(args[0] + " is not a known command!");
+							checkCombos();
 						}
-					});
-					break;
-				default:
-					if (app.custom.commands[args[0]]) {
-						args[0] = app.custom.commands[args[0]];
-						process(args.join(" "));
-					}
-					else {
-						sAlert(args[0] + " is not a known command!");
-					}
+				}
+			}
+			catch (e) {
+				checkCombos();
+				/*
+				try {
+					sAlert(String(e));
+				}
+				catch (e2) {
+					console.log(e2);
+				}
+				*/
+			}
+
+			if (shouldSave) {
+				save();
 			}
 		}
-		catch (e) {
-			/*
-			try {
-				sAlert(String(e));
-			}
-			catch (e2) {
-				console.log(e2);
-			}
-			*/
-		}
-		
-		if (shouldSave) {
-			save();
+		else {
+			setCombos(combo.slice(1, combo.length));
+			process(combo[0]);
 		}
 	};
 	
@@ -685,6 +791,24 @@ scripts.console.run = function () {
 	
 	var rScript = function (scr) {
 		window.postMessage({type: 'run', text: scr}, "https://epicmafia.com");
+	};
+	
+	var setCombos = function (arr) {
+		localStorage.eescombos = arr.join(";");
+	};
+	
+	var checkCombos = function () {
+		var combo = localStorage.eescombos || "";
+		if (combo) {
+			combo = combo.split(";");
+		}
+		else {
+			combo = [];
+		}
+		if (combo.length) {
+			setCombos(combo.slice(1, combo.length));
+			process(combo[0]);
+		}
 	};
 	
 	var hasFlair = function (arr, f) {
@@ -718,8 +842,46 @@ scripts.console.run = function () {
 	};
 
 	var error = function (err) {
-		//
 		console.log(err);
+	};
+	
+	var editMacro = function (id) {
+		$("#macroName").text(id);
+		$("#macroInput").val(app.custom.macros[id]);
+		$("#macroModal").show();
+		$("body").css({
+			filter: "blur(5px)"
+		});
+		document.getElementById("macroInput").focus();
+	};
+	
+	var closeMacro = function () {
+		$("#macroName").text("");
+		$("#macroInput").val("");
+		$("#macroModal").hide();
+		$("body").css({
+			filter: "blur(0px)"
+		});
+		cons.focus();
+	};
+	
+	var saveMacro = function () {
+		app.custom.macros[$("#macroName").text()] = $("#macroInput").val();
+		sAlert("Macro '" + $("#macroName").text() + "' saved!");
+		save();
+	};
+	
+	var showHistory = function () {
+		if (historyIndex > -1) {
+			cons.value = history[historyIndex];
+		}
+		else {
+			cons.value = tempConsVal;
+		}
+	};
+	
+	var saveHistory = function () {
+		localStorage.eesConsoleHistory = JSON.stringify(history);
 	};
 
 	container.id = "console";
@@ -729,6 +891,16 @@ scripts.console.run = function () {
 
 	container.appendChild(cons);
 	document.body.appendChild(container);
+	document.body.parentNode.insertBefore(macroModal, document.body.nextSibling);
+	
+	document.getElementById("cancelMacro").addEventListener("click", function () {
+		closeMacro();
+	});
+	
+	document.getElementById("saveMacro").addEventListener("click", function () {
+		saveMacro();
+		closeMacro();
+	});
 
 	document.onkeydown = function (e) {
 		if (e.which == 192 && e.ctrlKey) {
@@ -746,21 +918,55 @@ scripts.console.run = function () {
 		}
 		else if (e.which == 27) {
 			//escape
-			container.style.display = "none";
-			app.show = "none";
-			save();
+			if ($("#macroModal").is(":visible")) {
+				closeMacro();
+			}
+			else {
+				container.style.display = "none";
+				app.show = "none";
+				save();
+			}
 		}
 		else if (e.which == 13 && container.style.display == "block" && document.activeElement.id == "consoleInput") {
-			//enter
+			//enter on console
 			process(cons.value);
+			history.unshift(cons.value);
+			if (history.length > 50) {
+				history.pop();
+			}
+			saveHistory();
+			historyIndex = -1;
 			cons.value = "";
+		}
+		else if (e.which == 13 && document.activeElement.id == "macroInput") {
+			//enter on macro edit
+			saveMacro();
+			closeMacro();
 		}
 		else if (e.which == 192 && app.show == "block") {
 			//~
-			e.preventDefault();
-			cons.focus();
+			if (!$("#macroModal").is(":visible")) {
+				e.preventDefault();
+				cons.focus();
+			}
+		}
+		else if (e.which == 38 && document.activeElement.id == "consoleInput") {
+			//Up
+			if (historyIndex < history.length - 1) {
+				if (historyIndex == -1) tempConsVal = cons.value;
+				historyIndex ++;
+				showHistory();
+			}
+		}
+		else if (e.which == 40 && document.activeElement.id == "consoleInput") {
+			//Down
+			if (historyIndex > -1) {
+				historyIndex --;
+				showHistory();
+			}
 		}
 	};
 
 	cons.focus();
+	checkCombos();
 };
