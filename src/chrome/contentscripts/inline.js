@@ -2,10 +2,10 @@ var script = document.createElement("script");
 script.innerHTML = '\
 	var scope;\
 	switch (window.location.pathname.split("/")[1]) {\
-		case "/lobby":\
+		case "lobby":\
 			scope = $("#lobby_container").scope();\
 			break;\
-		case "/message":\
+		case "message":\
 			/*\
 			Event triggered by scope.loadMessages() in message.js\
 			*/\
