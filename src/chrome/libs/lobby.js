@@ -1,4 +1,3 @@
-console.log("NEW LOBBY.JS");
 (function UMDish(name, context, definition) {
     context[name] = definition.call(context);
     if (typeof module !== "undefined" && module.exports) {
