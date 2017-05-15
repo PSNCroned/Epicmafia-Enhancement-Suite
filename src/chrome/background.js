@@ -243,12 +243,16 @@ chrome.webRequest.onBeforeRequest.addListener(function (data) {
 	else if (data.url.indexOf("message") != -1) {
 		return {redirectUrl: chrome.runtime.getURL("/libs/message.js")};
 	}
+	else if (data.url.indexOf("mafia_game") != -1) {
+		return {redirectUrl: chrome.runtime.getURL("/libs/mafiagame.js")};
+	}
 	else {
 		return {redirectUrl: data.url}
 	}
 }, {
 	urls: [
 		"*://epicmafia.com/javascripts/m/lobby_index.js*",
-		"*://epicmafia.com/javascripts/app/message.js*"
+		"*://epicmafia.com/javascripts/app/message.js*",
+		"*://epicmafia.com/javascripts/m/mafia_game.js*"
 	]
 }, ["blocking"]);

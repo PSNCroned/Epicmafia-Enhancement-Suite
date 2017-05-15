@@ -320,8 +320,7 @@ app.controller('MessageCtrl', ['$scope', '$http', '$window', '$routeParams', '$l
     $scope.$parent.type = 'inbox';
     $scope.back = function() {
         return $window.history.back();
-    }
-    ;
+    };
     $scope.deleteMessage = function(id) {
         return $http({
             method: 'delete',
