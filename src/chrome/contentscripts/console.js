@@ -103,7 +103,7 @@ scripts.console.run = function () {
 				<b>[back, b]</b> - Navigate back in history\
 			</li>\
 			<li>\
-				<b>[foreward, fwd, fr]</b> - Navigate foreward in history\
+				<b>[foreward, fwd]</b> - Navigate foreward in history\
 			</li>\
 			<li>\
 				<b>[refresh, re, r]</b> - Refresh the page\
@@ -169,7 +169,7 @@ scripts.console.run = function () {
 				</ul>\
 			</li>\
 			<li>\
-				<b>friend</b> - Send a friend request to the user of the user page you're viewing\
+				<b>[friend, fr]</b> - Send a friend request to the user of the user page you're viewing\
 			</li>\
 			<li>\
 				<b>join *[index]</b> - Join game by index in game list (index does not count unjoinable games). Not specifying an index joins the first open game.\
@@ -298,7 +298,6 @@ scripts.console.run = function () {
 						window.history.back();
 					case "forward":
 					case "fwd":
-					case "fr":
 						window.history.forward();
 						break;
 					case "reset":
@@ -679,6 +678,7 @@ scripts.console.run = function () {
 						checkCombos();
 						break;
 					case "friend":
+					case "fr":
 						var id = $("[data-title='Game Statistics']").attr("href").split("/")[2];
 						$.post("https://epicmafia.com/friend/request", {userid: id}, function (data) {
 							if (data.status) {

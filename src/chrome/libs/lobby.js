@@ -5320,6 +5320,7 @@ app.controller("LobbyCtrl", ["$scope", "$timeout", "socket", "$http", "$sce", "$
             return
         }
         socket.sendcmd("<", $scope.message);
+		document.body.dispatchEvent(new Event("clearContext"));
         return $scope.message = ""
     }
     ;

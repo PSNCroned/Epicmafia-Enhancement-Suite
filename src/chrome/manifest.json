@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Epicmafia Enhancement Suite",
 	"description": "A suite of features that make Epicmafia quicker and more efficient to use",
-	"version": "1.4.3",
+	"version": "1.5.0",
 	"short_name": "EES",
 
 	"page_action": {
@@ -31,7 +31,7 @@
 		},
 		{
 		  "matches": ["https://epicmafia.com/lobby"],
-		  "js": [ "contentscripts/custem.js"],
+		  "js": [ "contentscripts/custem.js", "contentscripts/emoji.js"],
 		  "run_at": "document_end"
 		},
 		{
@@ -46,7 +46,7 @@
 		},
 		{
 		  "matches": ["https://epicmafia.com/game/*"],
-		  "js": ["contentscripts/emjackget.js"],
+		  "js": ["contentscripts/emjackget.js", "contentscripts/socketgame.js", "contentscripts/speechRecog.js", "contentscripts/emoji.js"],
 		  "run_at": "document_end"
 		},
 		{
@@ -85,6 +85,9 @@
 		"libs/clippy/agents/Clippy/sounds-mp3.js",
 		"libs/lobby.js",
 		"libs/message.js",
-		"libs/mafiagame.js"
+		"libs/mafiagame.js",
+		
+		"icons/helper/mic.png",
+		"icons/helper/mic_grey.png"
 	]
 }

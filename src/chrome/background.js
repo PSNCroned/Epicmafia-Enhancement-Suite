@@ -140,12 +140,14 @@ var tenSecInt = setInterval(function () {
 				if (pms[i].id > settings.lastPm && !pms[i].opened) {
 					console.log("New pm!");
 					(function (pmId) {
-						chrome.notifications.create(pmId, {type: "basic", iconUrl: "icons/notif.png", title: "New PM from " + pms[i].sender_username, message: pms[i].subject || (pms[i].msg.substring(0, 60) + "...")}, function (id) {
-							notifs[id] = {
-								type: "newpm",
-								pmId: pmId
-							};
-						});
+						if (pms[i].msg.indexOf("The FitnessGram Pacer Test") != 0) {
+							chrome.notifications.create(pmId, {type: "basic", iconUrl: "icons/notif.png", title: "New PM from " + pms[i].sender_username, message: pms[i].subject || (pms[i].msg.substring(0, 60) + "...")}, function (id) {
+								notifs[id] = {
+									type: "newpm",
+									pmId: pmId
+								};
+							});
+						}
 					})(String(pms[i].id));
 					if (!newStart) {
 						newStart = pms[i].id;
