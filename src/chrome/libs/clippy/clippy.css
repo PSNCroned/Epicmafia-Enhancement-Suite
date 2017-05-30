@@ -1,7 +1,10 @@
+.clippy {
+	cursor: pointer;
+}
+
 .clippy, .clippy-balloon {
     position: fixed;
     z-index: 1000;
-    cursor: pointer;
 }
 
 .clippy-balloon {

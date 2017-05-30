@@ -829,14 +829,26 @@ clippy.Balloon.prototype = {
 		
 		var bub = this;
 		el.html(text + "<br /><br /> <a class='doneBub'>" + char + "</a>");
+		
 		$(".doneBub").click(function () {
 			complete();
 			if (char == "❌") {
 				bub._hidden = true;
 				bub._balloon.hide();
+				document.body.dispatchEvent(new Event("clearContext"));
 			}
 		});
-
+		
+		$(".aiForm").submit(function () {
+			complete();
+			bub._hidden = true;
+			bub._balloon.hide();
+		});
+		
+		try {
+			$(".aiQuery")[0].focus();
+		}
+		catch (e) {}
     },
 
     close:function () {
