@@ -54,7 +54,7 @@ chrome.storage.sync.get("ees", function (data) {
 		"autoplay": true,
 		"hideBackground": false,
 		"betterUserpages": true,
-		"helper": false,
+		"helper": true,
 		"scumhelp": true,
 		"lastEmjack": 0,
 		"lastPm": 0,
