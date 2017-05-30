@@ -52,7 +52,12 @@ var scripts = {
 		beforeLoad: false
 	},
 	helper: {
-		running: false,
+		running: true,
+		run: null,
+		beforeLoad: false
+	},
+	scumhelp: {
+		running: true,
 		run: null,
 		beforeLoad: false
 	}
