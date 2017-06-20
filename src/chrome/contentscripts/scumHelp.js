@@ -1,4 +1,6 @@
-scripts.console.run = function () {
+scripts.scumhelp.run = function () {
+	console.log("Scum Help");
+	
 	var red = false;
 	var green = false;
 

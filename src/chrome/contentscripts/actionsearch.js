@@ -1,7 +1,7 @@
 scripts.actionsearch.run = function () {
 	console.log("ActionSearch");
 	var script = document.createElement("script");
-	script.innerHTML = "var findId=function(a,b){var c;$.get(\"https:\/\/epicmafia.com\/user\/search?q=\"+a,function(a){a=a.data,a.length>0?(c=a[0].id,b(c)):alert(\"User not found!\")})},getModAct=function(a,b,c){var f,d=1,e=[],g=function(h){h=JSON.parse(h).data;for(f in h)h[f].user_id==a&&e.push(h[f]);d++,d<=b?getActionPage(d,g):c(e)},h=function(a){a=JSON.parse(a).data;for(f in a)e.push(a[f]);d++,d<=b?getActionPage(d,h):c(e)};a?getActionPage(d,g):getActionPage(d,h)},getByTarget=function(a,b,c,d){b=b.toLowerCase();var e=[];for(var f in c)c[f].name.toLowerCase().indexOf(a)==-1&&c[f].name.toLowerCase().indexOf(b)==-1||e.push(c[f]);d(e)},getActionPage=function(a,b){$.get(\"https:\/\/epicmafia.com\/action\/page?page=\"+a,function(a){b(a)})},setPage=function(a){$(\"#actionpages\").html(get_template(\"actions\")({data:a}))};$(\"#mod_actions h3\").html($(\"#mod_actions h3\").html()+\'<a id=\"searchModAct\" style=\"float: right; color: white; text-decoration: none; font-weight: normal;\">Advanced search \u00BB<\/a>\'),$(\"#mod_actions h3\").after(\'<div id=\"search\" style=\"display: none;\"><form id=\"searchForm\" class=\"forum_default\"><div id=\"searchInput\" style=\"text-align: center; padding: 5px;\"><input type=\"text\" id=\"pA\" placeholder=\"Player A\" style=\"width: 80px;\" autocomplete=\"off\" \/> did action on <input type=\"text\" id=\"pB\" placeholder=\"Player B\" style=\"width: 80px;\" autocomplete=\"off\" \/> in the last <input type=\"text\" id=\"amt\" placeholder=\"amount\" value=\"10\" style=\"width: 80px; margin-top: 3px;\" autocomplete=\"off\" \/> pages.<\/div><input type=\"submit\" value=\"Refine Search\" class=\"redbutton\" style=\"display: block; font-size: 0.9em; margin: 5px auto 5px auto;\" \/><a id=\"clearActions\" style=\"display: block; margin: auto; text-align: center; font-size: 13px;\">Clear<\/a><\/form><\/div>\'),$(\"#searchModAct\").click(function(){$(\"#search\").toggle()}),$(\"#searchForm\").submit(function(a){a.preventDefault(),$(\"#actionpages\").html(\'<img src=\"http:\/\/www.arabianbusiness.com\/skins\/ab.main\/gfx\/loading_spinner.gif\" id=\"loadingList\" width=\"50\" height=\"50\" style=\"display: block; margin: auto;\">\');var b=$(\"#pA\").val(),c=$(\"#pB\").val(),d=$(\"#amt\").val();b&&d?findId(b,function(a){getModAct(a,d,function(a){c?findId(c,function(b){getByTarget(b,c,a,function(a){setPage(a)})}):setPage(a)})}):d?getModAct(null,d,function(a){c?findId(c,function(b){getByTarget(b,c,a,function(a){setPage(a)})}):setPage(a)}):alert(\"You must enter a page amount!\")}),$(\"#clearActions\").click(function(){loadpage_actions(1)});";
+	script.innerHTML = "var findId=function(t,e){var a;$.get(\"https:\/\/epicmafia.com\/user\/search?q=\"+t,function(t){(t=t.data).length>0?(a=t[0].id,e(a)):(alert(\"User not found!\"),loadpage_actions(1))})},getModAct=function(t,e,a){var n,o=1,i=[],c=function(s){s=JSON.parse(s).data;for(n in s)s[n].user_id==t&&i.push(s[n]);++o<=e?getActionPage(o,c):a(i)},s=function(t){t=JSON.parse(t).data;for(n in t)i.push(t[n]);++o<=e?getActionPage(o,s):a(i)};t?getActionPage(o,c):getActionPage(o,s)},getByTarget=function(t,e,a,n){e=e.toLowerCase();var o=[];for(var i in a)-1==a[i].name.toLowerCase().indexOf(t)&&-1==a[i].name.toLowerCase().indexOf(e)||o.push(a[i]);n(o)},getActionPage=function(t,e){$.get(\"https:\/\/epicmafia.com\/action\/page?page=\"+t,function(t){e(t)})},setPage=function(t){$(\"#actionpages\").html(window.get_template(\"actions\")({data:t}))};$(\"#mod_actions h3\").html($(\"#mod_actions h3\").html()+\'<a id=\"searchModAct\" style=\"float: right; color: white; text-decoration: none; font-weight: normal;\">Advanced search \u00BB<\/a>\'),$(\"#mod_actions h3\").after(\'<div id=\"search\" style=\"display: none;\">\\t\\t\\t<form id=\"searchForm\" class=\"forum_default\">\\t\\t\\t\\t<div id=\"searchInput\" style=\"text-align: center; padding: 5px;\">\\t\\t\\t\\t\\t<input type=\"text\" id=\"pA\" placeholder=\"Any Mod\" style=\"width: 80px;\" autocomplete=\"off\" \/> did actions on <input type=\"text\" id=\"pB\" placeholder=\"Any User\" style=\"width: 80px;\" autocomplete=\"off\" \/> in the last <input type=\"text\" id=\"amt\" placeholder=\"amount\" value=\"10\" style=\"width: 80px; margin-top: 3px;\" autocomplete=\"off\" \/> pages.\\t\\t\\t\\t<\/div>\\t\\t\\t\\t<input type=\"submit\" value=\"Search\" class=\"redbutton\" style=\"display: block; font-size: 0.9em; margin: 5px auto 5px auto;\" \/>\\t\\t\\t\\t<a id=\"clearActions\" style=\"display: block; margin: auto; text-align: center; font-size: 13px; margin-bottom: 10px;\">Clear<\/a>\\t\\t\\t<\/form>\\t\\t<\/div>\'),$(\"#searchModAct\").click(function(){$(\"#search\").toggle()}),$(\"#searchForm\").submit(function(t){t.preventDefault(),$(\"#actionpages\").html(\'<img src=\"http:\/\/www.arabianbusiness.com\/skins\/ab.main\/gfx\/loading_spinner.gif\" id=\"loadingList\" width=\"50\" height=\"50\" style=\"display: block; margin: auto;\">\');var e=$(\"#pA\").val(),a=$(\"#pB\").val(),n=$(\"#amt\").val();e&&n?findId(e,function(t){getModAct(t,n,function(t){a?findId(a,function(e){getByTarget(e,a,t,function(t){setPage(t)})}):setPage(t)})}):n?getModAct(null,n,function(t){a?findId(a,function(e){getByTarget(e,a,t,function(t){setPage(t)})}):setPage(t)}):(alert(\"You must enter a page amount!\"),loadpage_actions(1))}),$(\"#clearActions\").click(function(){loadpage_actions(1)});";
 	document.body.appendChild(script);
 	//Needs to run in context of the page, but here is the uncompressed script
 	/*
@@ -15,6 +15,7 @@ scripts.actionsearch.run = function () {
             }
             else {
                 alert("User not found!");
+				loadpage_actions(1);
             }
         });
     };
@@ -82,7 +83,18 @@ scripts.actionsearch.run = function () {
     }
 
     $("#mod_actions h3").html($("#mod_actions h3").html() + '<a id="searchModAct" style="float: right; color: white; text-decoration: none; font-weight: normal;">Advanced search »</a>');
-    $("#mod_actions h3").after('<div id="search" style="display: none;"><form id="searchForm" class="forum_default"><div id="searchInput" style="text-align: center; padding: 5px;"><input type="text" id="pA" placeholder="Player A" style="width: 80px;" autocomplete="off" /> did action on <input type="text" id="pB" placeholder="Player B" style="width: 80px;" autocomplete="off" /> in the last <input type="text" id="amt" placeholder="amount" value="10" style="width: 80px; margin-top: 3px;" autocomplete="off" /> pages.</div><input type="submit" value="Refine Search" class="redbutton" style="display: block; font-size: 0.9em; margin: 5px auto 5px auto;" /><a id="clearActions" style="display: block; margin: auto; text-align: center; font-size: 13px;">Clear</a></form></div>');
+	
+    $("#mod_actions h3").after(
+		'<div id="search" style="display: none;">\
+			<form id="searchForm" class="forum_default">\
+				<div id="searchInput" style="text-align: center; padding: 5px;">\
+					<input type="text" id="pA" placeholder="Any Mod" style="width: 80px;" autocomplete="off" /> did actions on <input type="text" id="pB" placeholder="Any User" style="width: 80px;" autocomplete="off" /> in the last <input type="text" id="amt" placeholder="amount" value="10" style="width: 80px; margin-top: 3px;" autocomplete="off" /> pages.\
+				</div>\
+				<input type="submit" value="Search" class="redbutton" style="display: block; font-size: 0.9em; margin: 5px auto 5px auto;" />\
+				<a id="clearActions" style="display: block; margin: auto; text-align: center; font-size: 13px; margin-bottom: 10px;">Clear</a>\
+			</form>\
+		</div>'
+	);
 
     $("#searchModAct").click(function () {
         $("#search").toggle();
@@ -128,6 +140,7 @@ scripts.actionsearch.run = function () {
         }
         else {
             alert("You must enter a page amount!");
+			loadpage_actions(1);
         }
     });
 
@@ -135,4 +148,6 @@ scripts.actionsearch.run = function () {
         loadpage_actions(1);
     });
 	*/
+	//https://jscompress.com/
+	//https://www.freeformatter.com/javascript-escape.html
 };
