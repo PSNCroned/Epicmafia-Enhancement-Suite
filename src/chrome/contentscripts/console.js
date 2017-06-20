@@ -14,6 +14,50 @@ scripts.console.run = function () {
 	
 	var lobbyList = {"main":1,"sandbox":5,"games":6,"survivor":27,"competitive":3,"danganmafia":12,"outcast":69,"vidya":13,"snkmafia":42,"mafiastuck":56,"banneduserlobby":25,"undertale":236,"reverse":93,"stevenuniversemafia":197,"hetamafia":72,"bakerswag":102,"sportsanimemafia":100,"chrismclean":39,"colormafia":55,"personamafia":91,"talesofmafia":31,"multifandommafia":117,"phoenixwrightmafia":66,"nokillmafioso":11,"bakerswag2":103,"hsmafia":229,"videogames":44,"overwatchmafia":307,"bakerswag3":104,"bakerswag4":105,"vancy":9,"rwbymafia":132,"chronic":26,"fireemblem":187,"drgmafia":292,"illuminati":166,"open":40,"multiversemadness":176,"kagemafia":65,"test":20,"sparta":183,"naruto":124,"dailymafia":54,"herecomesdatmaf":323,"newdanganmafia":97,"hivecity":246,"crunk":142,"avalon":171,"anonymous":16,"whatmafia":144,"wearegods":34,"unlimitedbrettworks":8,"happyspermfamily":61,"testing":59,"coolkidsonly":113,"madokamafia":75,"mogekomafia":134,"ducksquad":165,"klkmafia":64,"squad":313,"undertalemafia":232,"bokunoheroacademia":290,"icepc":133,"shuutoku":121,"kino":80,"ghost":149,"teammafia":135,"dangerzone":322,"bisamafia":58,"enstars":325,"hipstermafia":128,"gold":17,"dogeteam":212,"mixmatchmafia":138,"customrolesonly":15,"adventure":60,"aamafia":52,"karaluchy":248,"angle":319,"mafiables":157,"xtraining":51,"liarsdice":119,"osomatsusan":258,"helix":158,"thenagilobby":77,"sumafia":283,"blastoise":200,"utdinnergames":268,"nihility":267,"takis":280,"cirnolobby":95,"ryuunobu":341,"doubtacademy":76,"mentors":244,"2roomsandaboom":71,"gaymes":130,"ttmlobby":328,"implyingmaf":249,"despairmafia":85,"lovebox":275,"tdwiki":298,"bbandvivor":28,"evolpz":340,"abyss":357,"emundertale":250,"ddmafia":203,"zeal":29,"yakuzapalooza":94,"hunterxhunter":287,"stickers":123,"chito":141,"pimpdown":277,"memeteam":336,"chickennugger":112,"rvbmafia":126,"memesus":216,"mutualpeak":79,"pointfarm":146,"amazon":182,"mentoring":74,"ygomafia":289,"fredbox":281,"idolhell":301,"spooky":218,"adblock":265,"pmdmaf":222,"points":192,"podsawesomelobby":155,"undertalecasual":284,"wolfpack":57,"talesofeggbear":78,"christianminglelobby":83,"vocamafia":161,"goatmafia":211,"stayout":33,"cittamafia":50,"elites":140,"funlobby":326,"sandbaax":327,"fusion":317,"maxifun":172,"mafiascum":184,"unnamedlobby":266,"splashpad":344,"bangarang":348,"gliese":101,"anarchy":304,"exalted":247,"noter":342,"plllobby123":109,"eiyumafia":168,"best":195,"ewangslayers":167,"family":217,"lukageo":306,"space":353,"sforestmafia":36,"pokemon":81,"dissentmafia":309,"treehouse":324,"duffs":227,"pancake":230,"secretlobby":82,"cute":339,"supremememes":352,"mainstreet":170,"epicmafiaidol":150,"superkent":233,"murderboat":329,"thechosen":169,"wifom":190,"bebop":320,"superkicks":338,"dysfunctional":199,"project":175,"happypeople":125,"party":207,"sloths":86,"sammmie":351,"definitely":343,"mechtesting":99,"jjbamafia":148,"supersmashcampus":174,"ryslig":206,"lobbyyy":213,"kodachrome":315,"lowresazamamafia":337,"socialism":347,"loll":178,"ijustwantedtomakeone":179,"aphforum":181,"fuckboys":220,"semesterofdesolation":164,"finalfantasymafiosos":173,"hazyville":332,"wishlist":186,"morgmafia":205,"mafianmoseby":271,"trophy":24,"remnantmafia":185,"anythinggoes":208,"scholomance":177,"macklelobby":234,"6duck":84,"kyuupiikei":241,"bikinibottom":257,"cahniverse":272,"cius":288,"didijusthearhope":310,"shittyyugiohmafia":269,"kingdomheartsmafia":295,"sodplus":300,"undermafia":335,"topsecret":89,"sonicthehedgehog":252,"earthbound":273,"tokens":274,"terubearufunhouse":354,"windylobby":253,"memers":152,"sokoisanerd":163,"theantivoid":308,"dogelobby":254,"utopia":270,"chillmafia":209,"nerdyassplurkmafia":215,"southpark":228,"main1":98,"mafiamatsu":356,"liam":256,"betmen":262,"farmlobby":264,"iwannabethemafia":30,"idolmafia":293,"super":346,"laboratorium":107,"underlook":291,"herogarbage":70,"lgbt":350,"ultimate":122,"dapperjim":180,"yoloswag":259,"greymistlake":260,"scream":261,"doubtacademymafia":321,"lulzsec":358,"epic":193,"mafiatama":210,"litterbox":286,"lukageo2":312,"maln":154,"ictwitmaf":131,"magimafia":162,"whocares":214,"showbymafia":294,"bulletdimension":303,"private":305,"voltronmafia":311,"usagi":330,"bananahammock":334,"smbx":188,"deathvalley":243,"spike":255,"carbon":202,"spicysinners":263,"platinum":18,"geomafia":318,"johnbatman":345,"junk":219,"diamond":19,"hello":47,"gerk":62,"gayrights":331,"feministrt":106,"thefiverlobbyists":115,"ghostsnfools":224,"cyanandco":41,"shslmafia":120,"wang":242,"tacobox":314,"deadnigger":191,"round100bronze":145,"gayexplosion":194,"dome":333,"asylum":349,"losttrophy":143,"michaelcerafanclub":189,"friendsmafia":196,"murderbox":282,"galaxycauldronmafia":302,"matsu":355,"laboratory":316};
 	
+	var gotoKeys = {
+		mods: "/moderator",
+		home: "/home",
+		round: "/round",
+		reports: "/report",
+		report: "/report",
+		pm: "/message",
+		pms: "/message",
+		msg: "/message",
+		message: "/message",
+		family: "/family",
+		forum: "/forum",
+		forums: "/forum",
+		f: "/forum",
+		learn: "/role",
+		roles: "/role",
+		role: "/role",
+		settings: "/user/edit",
+		set: "/user/edit",
+		family: "/family",
+		fam: "/family",
+		buy: "/addon",
+		addon: "/addon",
+		alts: "/user/alternates",
+		alt: "/user/alternates",
+		alternates: "/user/alternates",
+		alternate: "/user/alternates",
+		create: "/game/new",
+		creategame: "/game/new",
+		new: "/game/new",
+		host: "/game/new",
+		newgame: "/game/new",
+		fame: "/score/fame",
+		halloffame: "/score/fame",
+		achieve: "/score/achieve",
+		achievers: "/score/achieve",
+		familyfame: "/score/family",
+		famfame: "/score/family",
+		setupfame: "/score/setup",
+		honor: "/score/honorrole",
+		honorrole: "/score/honorrole",
+		alltime: "/score/alltime",
+	};
+	
 	var localStorage = window.localStorage;
 	var app = localStorage.emconsole;
 	var history = JSON.parse(localStorage.eesConsoleHistory || "[]");
@@ -32,24 +76,25 @@ scripts.console.run = function () {
 			}
 			save();
 		}
+		
+		//Check if they have the full goto list
+		for (var key in gotoKeys) {
+			if (!app.goto[key]) {
+				app.goto[key] = gotoKeys[key];
+			}
+		}
+		
+		if (app.goto.reports == "/reports") {
+			app.goto.reports = "/report";
+			save();
+		}
+		
+		
 	}
 	else {
 		app = {
 			show: "none",
-			goto: {
-				mods: "/moderator",
-				home: "/home",
-				round: "/round",
-				reports: "/reports",
-				pm: "/message",
-				pms: "/message",
-				msg: "/message",
-				message: "/message",
-				family: "/family",
-				forum: "/forum",
-				forums: "/forum",
-				f: "/forum"
-			},
+			goto: gotoKeys,
 			lobbies: lobbyList,
 			custom: {
 				commands: {}
@@ -141,6 +186,7 @@ scripts.console.run = function () {
 				<ul>\
 					<li><i>set cmd [newCommand] [oldCommand]</i> - Make/edit a custom command that mimics a preexisting one</li>\
 					<li><i>set goto [key] [url]</i> - Make/edit a goto key</li>\
+					<li><i>set lobby [key] [lobby name]</i> - Adds or edits a lobby key</li>\
 					<li><i>set delete [command]</i> - Deletes a custom command</li>\
 					<li><i>set delete goto [key]</i> - Deletes a goto key</li>\
 					<li><i>set delete lobby [key]</i> - Deletes a lobby key</li>\
@@ -365,7 +411,7 @@ scripts.console.run = function () {
 											checkCombos();
 										}
 										else {
-											gotoPage("/message" + messages[args[2] - 1].attr("href"), hasFlair(flairs, "-t"));
+											gotoPage(messages[args[2] - 1].attr("href"), hasFlair(flairs, "-t"));
 										}
 									}
 									else {

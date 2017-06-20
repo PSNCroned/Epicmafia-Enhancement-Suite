@@ -155,7 +155,6 @@ var tenSecInt = setInterval(function () {
 					}
 				}
 			}
-			console.log("Newstart: " + newStart);
 			if (newStart) {
 				settings.lastPm = newStart;
 				saveSettings();
@@ -164,7 +163,7 @@ var tenSecInt = setInterval(function () {
 
 		//Forum Check
 		var tids = Object.keys(settings.topics);
-		if (tids.length > 0) {
+		if (tids.length > 0 && settings.forumtracker) {
 			forumCheck(tids, 0);
 		}
 	});
