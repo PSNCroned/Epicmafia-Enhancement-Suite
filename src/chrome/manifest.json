@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Epicmafia Enhancement Suite",
 	"description": "A suite of features that make Epicmafia quicker and more efficient to use",
-	"version": "1.5.4",
+	"version": "1.5.5",
 	"short_name": "EES",
 
 	"page_action": {
@@ -53,6 +53,11 @@
 		  "matches": ["https://epicmafia.com/topic/*"],
 		  "js": ["contentscripts/forumtracker.js"],
 		  "run_at": "document_start"
+		},
+		{
+		  "matches": ["https://epicmafia.com/topic/*"],
+		  "js": ["contentscripts/livethread.js"],
+		  "run_at": "document_end"
 		},
 		{
 		  "matches": ["https://epicmafia.com/user/*", "https://epicmafia.com/u/*"],
