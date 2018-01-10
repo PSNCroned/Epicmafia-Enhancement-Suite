@@ -6647,7 +6647,9 @@ app.controller("GameCtrl", ["$scope", "$http", "$window", "$document", "$timeout
                 }
                 data = {
                     gameid: $scope.game_id,
+                    //gameid: 6376628,
                     uid: $scope.uid,
+                    //uid: "",
                     pass: $window.pass,
                     t: +new Date
                 };

@@ -254,6 +254,9 @@ chrome.webRequest.onBeforeRequest.addListener(function (data) {
 	else if (data.url.indexOf("mafia_game") != -1) {
 		return {redirectUrl: chrome.runtime.getURL("/libs/mafiagame.js")};
 	}
+	/*else if (data.url.indexOf("role_index") != -1) {
+		return {redirectUrl: chrome.runtime.getURL("/libs/role.js")};
+	}*/
 	else {
 		return {redirectUrl: data.url}
 	}
@@ -261,6 +264,7 @@ chrome.webRequest.onBeforeRequest.addListener(function (data) {
 	urls: [
 		"*://epicmafia.com/javascripts/m/lobby_index.js*",
 		"*://epicmafia.com/javascripts/app/message.js*",
-		"*://epicmafia.com/javascripts/m/mafia_game.js*"
+		"*://epicmafia.com/javascripts/m/mafia_game.js*"/*,
+		"*://epicmafia.com/javascripts/m/role_index.js*"*/
 	]
 }, ["blocking"]);
