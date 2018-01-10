@@ -1013,6 +1013,12 @@ scripts.console.run = function () {
 		}
 	};
 
+	$("#wcliWrapper").remove();
 	cons.focus();
 	checkCombos();
+	
+	setTimeout(function () {
+		$("#wcliConsolePanel").remove();
+		cons.focus();
+	}, 1);
 };

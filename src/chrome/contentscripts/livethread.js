@@ -4,21 +4,28 @@ var unseen = 0;
 var autoScroll = false;
 var onTab = true;
 
-$(".views").append("<button id='goLive' style='font-family: Arial; font-size: 18px; background-color: #f44242; color: white; border: 0px; padding: 5px; border-radius: 2px; cursor: pointer;'>Live</button>");
+var goLiveButton = "<button class='goLive' style='font-family: Arial; font-size: 18px; background-color: #f44242; color: white; border: 0px; padding: 5px; border-radius: 2px; cursor: pointer;'>Live</button>";
 
+$(".views").append(goLiveButton);
+$("#create_post").after(goLiveButton);
 
-$("#goLive").click(function () {
+$(".goLive").last().css({
+	"margin-left": "35px",
+	"margin-top": "10px"
+});
+
+$(".goLive").click(function () {
 	if (live) {
-		stopLive($(this));
+		stopLive();
 	}
 	else {
-		startLive($(this));
+		startLive();
 	}
 });
 
-var startLive = function (button) {
-	button.text("Stop");
-	button.css("background-color", "#af2b2b");
+var startLive = function () {
+	$(".goLive").text("Stop");
+	$(".goLive").css("background-color", "#af2b2b");
 	$("#create_post").hide();
 	$(".pagenav").remove();
 	live = true;
@@ -29,7 +36,31 @@ var startLive = function (button) {
 	else {
 		latest = 0;
 	}
-
+	
+	var form = $("<form id='liveSubmit' class='form'></form>");
+	var textarea = $("<textarea style='width: 350px; height: 200px;' placeholder='Type your reply here!'></textarea>");
+	var submit = $("<input type='submit' class='red' value='Post!' style='margin-left: 35px;'>");
+	
+	form.append(textarea).append(submit);
+	$("#create_post .lt-create-post").find("img").clone().prependTo(form).css({
+		"float": "left",
+		"border": "1px solid #ccc",
+		"margin-right": "3px"
+	});
+	$(".goLive").last().before(form);
+	
+	form.submit(function (e) {
+		e.preventDefault();
+		
+		var ajaxPost = "$.post('/post', {\
+							topic_id: window.location.pathname.split('/')[2],\
+							msg: $('#liveSubmit textarea').val()\
+						});\
+						$('#liveSubmit textarea').val('');";
+		
+		window.postMessage({type: 'run', text: ajaxPost}, "https://epicmafia.com");
+	});
+	
 	scanner = setInterval(function () {
 		$.get(window.location.pathname + "?_pjax=#posts", function (res) {
 			var page = $("<div></div>");
@@ -59,15 +90,19 @@ var startLive = function (button) {
 	}, 2000);
 };
 
-var stopLive = function (button) {
+var stopLive = function () {
 	clearInterval(scanner);
-	button.text("Live");
+	
+	$(".goLive").text("Live");
 	$("#create_post").show();
-	button.css("background-color", "#f44242");
+	$(".goLive").css("background-color", "#f44242");
+	
 	live = false;
 	$.get(window.location.pathname + "?_pjax=#posts", function (res) {
 		$("#posts").html(res);
 	});
+	
+	$("#liveSubmit").remove();
 };
 
 var updateTitle = function () {

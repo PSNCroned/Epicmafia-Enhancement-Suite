@@ -40,7 +40,7 @@ scripts.compmatch.run = function () {
 
     var round = $("#breadcrumb span:contains('Round')").text().split(" ")[1];
     
-    $("#round_middle").prepend("<div id='compSearch'><h3 style='margin-bottom: 10px;'>Search for games players have played together!</h3><form class='form' id='searchCompForm' style='margin-left: 7px;'><div class='search'><div class='search-icon'><i class='icon-search'></i></div><input autocomplete='off' id='searchCompText' placeholder='player name 1, 2, 3, ....' type='text' style='border: 1px solid #777;'></div></form><div id='loadingReport' style='text-align: center; display: none;'><br /><img src='http://www.arabianbusiness.com/skins/ab.main/gfx/loading_spinner.gif' width='50' height='50' /></div><div id='results' style='display: none; text-align: center; margin-top: 10px;'><div id='matchList'><table id='matchTable' style='margin: auto;'></table></div></div></div>");
+    $("#round_middle").prepend("<div id='compSearch'><h3 style='margin-bottom: 10px;'>Search for games players have played together!</h3><form class='form' id='searchCompForm' style='margin-left: 7px;'><div class='search'><div class='search-icon'><i class='icon-search'></i></div><input autocomplete='off' id='searchCompText' placeholder='player name 1, 2, 3, ....' type='text' style='border: 1px solid #777;'></div></form><div id='loadingReport' style='text-align: center; display: none;'><br /><img src='http://i.imgur.com/1keL4Ac.gif' width='25' /></div><div id='results' style='display: none; text-align: center; margin-top: 10px;'><div id='matchList'><table id='matchTable' style='margin: auto;'></table></div></div></div>");
     $("#searchCompForm").submit(function (e) {
         e.preventDefault();
         
