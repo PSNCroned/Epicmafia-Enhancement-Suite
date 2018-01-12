@@ -993,3 +993,15 @@
 .icon-folder-open-alt:before {
     content: "" !important
 }
+
+.quotes:before,#lobby_container #lobby_announcement:before {
+    top: 12px;
+    left: 3px;
+    content: "“" !important
+}
+
+.quotes:after,#lobby_container #lobby_announcement:after {
+    bottom: 0;
+    right: 3px;
+    content: "”" !important
+}
